@@ -1,0 +1,1357 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<title>Neuroscience Study Ladder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a sticky "ladder" rail on the left lists the levels in build order; the main column climbs them.
+   Importance is shown as stain intensity, like a histology slide: core ideas are deeply stained, details are faint. */
+:root{
+  --bg:#F2F1F7; --surface:#FFFFFF; --surface-2:#E8E6F1; --ink:#1C1932; --muted:#5D5977; --line:#D2CFE1;
+  --accent:#6A3D9E; --accent-ink:#FFFFFF; --stain:#E7DDF5; --stain-line:#C9B5E6;
+  --signal:#C77700; --excite:#C9402A; --inhib:#2D68AE; --good:#2E7D4F;
+  --f-display:"Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --f-body:"Source Serif 4", Georgia, "Times New Roman", serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  --s-1:.8125rem; --s0:1.0625rem; --s1:1.25rem; --s2:1.6rem; --s3:2.2rem; --s4:clamp(2.2rem,5vw,3.4rem);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#100E1C; --surface:#18162A; --surface-2:#221F37; --ink:#ECE9F7; --muted:#A6A1C3; --line:#332F4D;
+  --accent:#B997EA; --accent-ink:#1A1030; --stain:#2A2145; --stain-line:#4A3B70;
+  --signal:#F2B33D; --excite:#FF7C5E; --inhib:#73A9EC; --good:#6CCB92; color-scheme: dark } }
+:root[data-theme="dark"]{
+  --bg:#100E1C; --surface:#18162A; --surface-2:#221F37; --ink:#ECE9F7; --muted:#A6A1C3; --line:#332F4D;
+  --accent:#B997EA; --accent-ink:#1A1030; --stain:#2A2145; --stain-line:#4A3B70;
+  --signal:#F2B33D; --excite:#FF7C5E; --inhib:#73A9EC; --good:#6CCB92; color-scheme: dark }
+
+*{box-sizing:border-box}
+body{background:var(--bg); color:var(--ink); font-family:var(--f-body); font-size:var(--s0); line-height:1.6}
+h1,h2,h3,h4{font-family:var(--f-display); line-height:1.15; text-wrap:balance; margin:0}
+p{margin:0}
+a{color:var(--accent)}
+button,select,input{font:inherit}
+:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+.mono{font-family:var(--f-mono); font-size:var(--s-1); letter-spacing:.02em}
+
+.shell{display:grid; grid-template-columns:250px minmax(0,1fr); gap:48px; max-width:1240px; margin:0 auto; padding-inline:24px; padding-block:0 96px}
+
+/* ---------- Rail ---------- */
+.rail{position:sticky; top:env(safe-area-inset-top,0px); align-self:start; height:100vh; overflow-y:auto; padding-block:28px; display:flex; flex-direction:column; gap:18px}
+.rail .brand{font-family:var(--f-display); font-weight:800; font-size:1.15rem; letter-spacing:-.01em}
+.rail .brand small{display:block; font-family:var(--f-mono); font-weight:400; font-size:.72rem; color:var(--muted); letter-spacing:.06em; text-transform:uppercase; margin-top:4px}
+.ladder{list-style:none; margin:0; padding:0; position:relative; display:flex; flex-direction:column}
+.ladder::before{content:""; position:absolute; left:11px; top:12px; bottom:12px; width:2px; background:var(--line)}
+.ladder a{display:grid; grid-template-columns:24px 1fr; gap:10px; align-items:center; padding:5px 0; text-decoration:none; color:var(--muted); font-family:var(--f-display); font-weight:500; font-size:.92rem; position:relative}
+.ladder a .dot{width:24px; height:24px; border-radius:50%; border:2px solid var(--line); background:var(--bg); display:grid; place-items:center; font-family:var(--f-mono); font-size:.66rem; color:var(--muted)}
+.ladder a.here{color:var(--ink)}
+.ladder a.here .dot{border-color:var(--accent); color:var(--accent)}
+.ladder a.done .dot{background:var(--accent); border-color:var(--accent); color:var(--accent-ink)}
+.rail .tools{display:flex; flex-direction:column; gap:10px; border-top:1px solid var(--line); padding-top:16px}
+.toggle{display:flex; align-items:center; gap:10px; cursor:pointer; font-family:var(--f-display); font-size:.9rem}
+.toggle input{width:18px; height:18px; accent-color:var(--accent)}
+.progress-txt{color:var(--muted)}
+
+/* ---------- Hero ---------- */
+.hero{padding-block:56px 24px; display:grid; gap:18px}
+.eyebrow{font-family:var(--f-mono); font-size:.75rem; letter-spacing:.12em; text-transform:uppercase; color:var(--accent)}
+.hero h1{font-size:var(--s4); font-weight:800; letter-spacing:-.025em; max-width:18ch}
+.hero .lede{font-size:var(--s1); max-width:60ch; color:var(--muted)}
+.loop{display:flex; flex-wrap:wrap; gap:8px; align-items:center; list-style:none; padding:0; margin:8px 0 0}
+.loop li{display:flex; align-items:center; gap:8px}
+.loop a{display:inline-block; padding:8px 14px; border-radius:999px; background:var(--surface); border:1px solid var(--line); text-decoration:none; color:var(--ink); font-family:var(--f-display); font-weight:700; font-size:.95rem}
+.loop a span{font-family:var(--f-mono); font-weight:400; font-size:.7rem; color:var(--muted); margin-left:6px}
+.loop a:hover{border-color:var(--accent)}
+.loop li:not(:last-child)::after{content:"→"; color:var(--muted)}
+.loop .back{font-family:var(--f-mono); font-size:.75rem; color:var(--muted)}
+
+.legend{display:flex; flex-wrap:wrap; gap:10px 24px; padding:14px 18px; background:var(--surface); border:1px solid var(--line); border-radius:10px; font-size:var(--s-1)}
+.legend b{font-family:var(--f-display)}
+.sw{display:inline-block; width:14px; height:14px; border-radius:3px; vertical-align:-2px; margin-right:6px}
+.sw.core{background:var(--accent)} .sw.key{background:var(--stain); border:1px solid var(--stain-line)} .sw.det{border:1px dashed var(--line)}
+
+/* ---------- Levels ---------- */
+.level{padding-block:56px 8px; border-top:1px solid var(--line); display:grid; gap:22px; scroll-margin-top:12px}
+.level-head{display:grid; grid-template-columns:auto minmax(0,1fr); gap:6px 18px; align-items:start}
+.lvl-num{font-family:var(--f-display); font-weight:800; font-size:3.4rem; line-height:.9; color:var(--accent); letter-spacing:-.04em; grid-row:span 3}
+.level-head h2{font-size:var(--s3); font-weight:800; letter-spacing:-.02em}
+.level-head .q{color:var(--muted); font-style:italic}
+.builds{display:flex; flex-wrap:wrap; gap:6px; align-items:center; font-family:var(--f-mono); font-size:.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:.06em}
+.builds a{text-transform:none; letter-spacing:0; padding:2px 8px; border:1px solid var(--line); border-radius:999px; text-decoration:none; color:var(--ink); background:var(--surface)}
+.builds a:hover{border-color:var(--accent)}
+
+/* Tier: core */
+.core{background:var(--accent); color:var(--accent-ink); border-radius:14px; padding:22px 24px; display:grid; gap:8px}
+.core .tag{font-family:var(--f-mono); font-size:.7rem; letter-spacing:.14em; text-transform:uppercase; opacity:.8}
+.core p{font-family:var(--f-display); font-weight:500; font-size:clamp(1.15rem,2.2vw,1.4rem); line-height:1.4; max-width:62ch}
+.core p b{font-weight:800}
+/* Tier: key */
+.grid2{display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr)); gap:16px}
+.key{background:var(--stain); border:1px solid var(--stain-line); border-radius:12px; padding:18px 20px; display:grid; gap:10px; align-content:start; min-width:0}
+.key h3{font-size:var(--s1); font-weight:700}
+.key h3 .t{font-family:var(--f-mono); font-weight:400; font-size:.66rem; letter-spacing:.12em; text-transform:uppercase; color:var(--accent); display:block; margin-bottom:4px}
+.key ul,.key ol,.det ul{margin:0; padding-left:1.2em; display:grid; gap:4px}
+/* Tier: detail */
+.det{border:1px dashed var(--line); border-radius:12px; padding:14px 18px; display:grid; gap:8px; color:var(--muted); font-size:.95rem; min-width:0}
+.det h3{font-size:1rem; font-weight:700; color:var(--ink)}
+.det h3 .t{font-family:var(--f-mono); font-weight:400; font-size:.64rem; letter-spacing:.12em; text-transform:uppercase; display:block; margin-bottom:2px}
+body.essentials .det, body.essentials details.ex{display:none}
+
+.note{font-size:.9rem; border-left:3px solid var(--signal); padding:4px 0 4px 12px; color:var(--ink)}
+.note b{font-family:var(--f-display); color:var(--signal)}
+.mine{font-family:var(--f-mono); font-size:.66rem; letter-spacing:.06em; text-transform:uppercase; color:var(--accent); border:1px solid var(--stain-line); border-radius:4px; padding:0 5px; vertical-align:2px; white-space:nowrap}
+.added{font-family:var(--f-mono); font-size:.66rem; letter-spacing:.06em; text-transform:uppercase; color:var(--good); border:1px solid currentColor; border-radius:4px; padding:0 5px; vertical-align:2px; white-space:nowrap}
+
+/* Example dropdowns */
+details.ex{border:1px solid var(--line); background:var(--surface); border-radius:10px}
+details.ex > summary{cursor:pointer; list-style:none; padding:10px 14px 10px 44px; position:relative; display:block; font-family:var(--f-display); font-weight:600; font-size:.95rem}
+details.ex > summary::-webkit-details-marker{display:none}
+details.ex > summary::before{content:"+"; position:absolute; left:14px; top:11px; font-family:var(--f-mono); width:20px; height:20px; display:grid; place-items:center; border-radius:5px; background:var(--surface-2); color:var(--accent)}
+details.ex[open] > summary::before{content:"−"}
+details.ex > summary .k{margin-inline:4px; font-family:var(--f-mono); font-weight:400; font-size:.68rem; letter-spacing:.1em; text-transform:uppercase; color:var(--muted)}
+details.ex > div{padding:0 16px 14px 44px; display:grid; gap:8px; font-size:.97rem}
+.key details.ex > div{padding-left:16px}
+
+/* Tables */
+.tbl{overflow-x:auto; border:1px solid var(--line); border-radius:12px; background:var(--surface)}
+table{border-collapse:collapse; width:100%; font-size:.95rem}
+th,td{text-align:left; padding:9px 14px; border-bottom:1px solid var(--line); vertical-align:top}
+th{font-family:var(--f-mono); font-weight:500; font-size:.7rem; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); background:var(--surface-2)}
+tr:last-child td{border-bottom:0}
+td b{font-family:var(--f-display)}
+
+/* Lab (interactive models) */
+.lab{background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:18px 20px 20px; display:grid; gap:14px; min-width:0}
+.lab-head{display:flex; flex-wrap:wrap; justify-content:space-between; gap:6px 16px; align-items:baseline}
+.lab-head h3{font-size:var(--s1); font-weight:700}
+.lab-head .mono{color:var(--signal); text-transform:uppercase; letter-spacing:.12em; font-size:.68rem}
+.lab .how{color:var(--muted); font-size:.92rem; max-width:70ch}
+.controls{display:flex; flex-wrap:wrap; gap:10px 18px; align-items:center}
+.ctl{display:grid; gap:2px; font-family:var(--f-mono); font-size:.72rem; color:var(--muted); min-width:150px; flex:1 1 150px; max-width:260px}
+.ctl output{color:var(--ink)}
+.ctl input[type=range]{width:100%; accent-color:var(--accent)}
+.btn{border:1px solid var(--line); background:var(--surface-2); color:var(--ink); padding:7px 14px; border-radius:8px; cursor:pointer; font-family:var(--f-display); font-weight:600; font-size:.9rem}
+.btn:hover{border-color:var(--accent)}
+.btn.pri{background:var(--accent); color:var(--accent-ink); border-color:var(--accent)}
+.btn.ex{border-color:var(--excite); color:var(--excite); background:var(--surface)}
+.btn.in{border-color:var(--inhib); color:var(--inhib); background:var(--surface)}
+.btn[aria-pressed="true"]{background:var(--accent); color:var(--accent-ink); border-color:var(--accent)}
+.seg{display:inline-flex; border:1px solid var(--line); border-radius:8px; overflow:hidden; flex-wrap:wrap}
+.seg button{border:0; background:var(--surface); color:var(--ink); padding:7px 12px; cursor:pointer; font-family:var(--f-display); font-size:.88rem}
+.seg button[aria-pressed="true"]{background:var(--accent); color:var(--accent-ink)}
+canvas{display:block; width:100%; border-radius:8px; background:var(--surface-2)}
+.readout{font-family:var(--f-mono); font-size:.8rem; color:var(--muted); display:flex; flex-wrap:wrap; gap:6px 18px}
+.readout b{color:var(--ink); font-weight:500}
+.explain{font-size:.95rem; padding:10px 14px; background:var(--surface-2); border-radius:8px; min-height:3.2em}
+.svgwrap{overflow-x:auto}
+svg text{font-family:var(--f-mono)}
+
+/* Brain map */
+.brainlab{display:grid; grid-template-columns:minmax(0,1.35fr) minmax(0,1fr); gap:18px; align-items:start}
+.brain-svg .lobe{stroke:var(--surface); stroke-width:3; cursor:pointer; transition:opacity .15s}
+.brain-svg .lobe:hover,.brain-svg .area:hover{opacity:.8}
+.brain-svg .area{cursor:pointer}
+.brain-svg .lbl{fill:var(--ink); font-size:13px; pointer-events:none; font-weight:500}
+.brain-svg .lbl.sm{font-size:10.5px}
+.brain-svg .sel{stroke:var(--ink); stroke-width:3}
+.brain-svg .ghost{fill:var(--signal); fill-opacity:.25; stroke:var(--signal); stroke-width:2; stroke-dasharray:5 4; cursor:pointer}
+.brain-svg .ghost.sel{fill-opacity:.55; stroke-dasharray:none}
+.chips{display:flex; flex-wrap:wrap; gap:6px}
+.chip{border:1px solid var(--line); background:var(--surface); color:var(--ink); border-radius:999px; padding:4px 11px; font-family:var(--f-display); font-size:.85rem; cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink); color:var(--bg); border-color:var(--ink)}
+.chip.deep{border-style:dashed}
+.info{display:grid; gap:8px}
+.info h4{font-size:1.3rem}
+.info .role{font-family:var(--f-display); font-weight:600; color:var(--accent)}
+
+/* Layers */
+.layers-svg .band{cursor:pointer; stroke:var(--line); stroke-width:1}
+.layers-svg .band.on{stroke:var(--accent); stroke-width:3}
+.layers-svg .ltxt{fill:var(--ink); font-size:13px; pointer-events:none}
+.layers-svg .lsub{fill:var(--muted); font-size:10.5px; pointer-events:none}
+.layers-svg .box{fill:var(--surface-2); stroke:var(--line)}
+.layers-svg .arrow{fill:none; stroke:var(--muted); stroke-width:2; opacity:.35; transition:opacity .2s, stroke .2s}
+.layers-svg .arrow.on{stroke:var(--signal); opacity:1; stroke-width:3.5}
+
+/* Orientation bars */
+.tune{display:grid; grid-template-columns:repeat(8,1fr); gap:6px; align-items:end; height:150px; padding:8px; background:var(--surface-2); border-radius:8px}
+.tune .col{display:grid; grid-template-rows:1fr auto auto; gap:4px; height:100%; justify-items:center}
+.tune .bar{width:70%; background:var(--accent); border-radius:4px 4px 0 0; align-self:end; transition:height .15s}
+.tune .ang{width:22px; height:22px}
+.tune .val{font-family:var(--f-mono); font-size:.62rem; color:var(--muted)}
+
+/* Habit */
+.meters{display:grid; gap:8px}
+.meter{display:grid; grid-template-columns:130px 1fr 42px; gap:10px; align-items:center; font-size:.85rem; font-family:var(--f-display)}
+.meter .trk{height:10px; background:var(--surface-2); border-radius:6px; overflow:hidden}
+.meter .fil{height:100%; background:var(--accent); border-radius:6px}
+.meter .v{font-family:var(--f-mono); font-size:.75rem; color:var(--muted); text-align:right}
+.stage{display:inline-block; font-family:var(--f-display); font-weight:700; padding:3px 10px; border-radius:6px; background:var(--stain); color:var(--ink)}
+
+/* Check yourself */
+.check{display:grid; gap:6px}
+.check > h4{font-family:var(--f-mono); font-weight:500; font-size:.72rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted)}
+.check details{border-bottom:1px solid var(--line); padding:6px 0}
+.check summary{cursor:pointer; font-family:var(--f-display); font-weight:600}
+.check details p{padding:6px 0 4px 18px; color:var(--muted)}
+.mastery{justify-self:start}
+
+/* Pipeline */
+.pipe{display:flex; flex-wrap:wrap; gap:6px; align-items:stretch; list-style:none; padding:0; margin:0}
+.pipe li{flex:1 1 110px; background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:10px 12px; display:grid; gap:2px}
+.pipe li b{font-family:var(--f-display); font-size:.98rem}
+.pipe li span{font-size:.82rem; color:var(--muted); line-height:1.35}
+.pipe li.hl{border-color:var(--accent); background:var(--stain)}
+
+.trace{list-style:none; padding:0; margin:0; display:grid; gap:0}
+.trace li{display:grid; grid-template-columns:34px minmax(0,1fr); gap:12px; padding:10px 0; border-bottom:1px solid var(--line)}
+.trace li .n{font-family:var(--f-mono); color:var(--accent); font-size:.85rem; padding-top:2px}
+.trace li b{font-family:var(--f-display)}
+.trace li .lv{font-family:var(--f-mono); font-size:.7rem; color:var(--muted)}
+
+footer{padding-block:48px 0; color:var(--muted); font-size:.85rem; border-top:1px solid var(--line); margin-top:48px}
+
+@media (max-width:900px){
+  .shell{grid-template-columns:minmax(0,1fr); gap:0; padding-inline:16px}
+  .rail{height:auto; position:sticky; top:env(safe-area-inset-top,0px); z-index:5; background:var(--bg); padding-block:8px; border-bottom:1px solid var(--line); flex-direction:row; align-items:center; gap:12px; overflow-x:auto; overflow-y:hidden; margin-inline:-16px; padding-inline:16px}
+  .rail .brand{display:none}
+  .ladder{flex-direction:row; gap:4px}
+  .ladder::before{display:none}
+  .ladder a{grid-template-columns:24px; gap:0}
+  .ladder a .nm{display:none}
+  .rail .tools{flex-direction:row; border-top:0; padding-top:0; border-left:1px solid var(--line); padding-left:12px; white-space:nowrap}
+  .rail .progress-txt{display:none}
+  .brainlab{grid-template-columns:minmax(0,1fr)}
+  .lvl-num{font-size:2.6rem}
+  .meter{grid-template-columns:100px 1fr 38px}
+}
+@media (prefers-reduced-motion: reduce){ *{transition:none!important; scroll-behavior:auto!important} }
+html{scroll-behavior:smooth}
+</style>
+<style>
+/* shared site tabs: Home / EE / Neuroscience */
+.sitetabs{background:var(--surface);border-bottom:1px solid var(--line)}
+.sitetabs .in{max-width:1240px;margin:0 auto;padding:10px 24px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.sitetabs .brand{font-family:var(--f-display);font-weight:800;font-size:.95rem;letter-spacing:.02em;color:var(--ink);text-decoration:none;margin-right:auto}
+.sitetabs .tabs{display:flex;gap:4px;background:var(--sunk,var(--surface-2));padding:3px;border-radius:10px}
+.sitetabs .tabs a{font-family:var(--f-display);font-weight:650;font-size:.92rem;text-decoration:none;color:var(--muted);padding:6px 14px;border-radius:7px;line-height:1.4}
+.sitetabs .tabs a:hover{color:var(--ink)}
+.sitetabs .tabs a[aria-current="page"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgb(0 0 0 / .14)}
+@media (max-width:600px){.sitetabs .in{padding:8px 16px;gap:8px}.sitetabs .brand{display:none}.sitetabs .tabs{width:100%}.sitetabs .tabs a{flex:1;text-align:center;padding:6px 6px}}
+</style>
+</head>
+<body>
+<nav class="sitetabs" aria-label="Study site"><div class="in"><a class="brand" href="../">Kyle's Study Site</a><div class="tabs"><a href="../">Home</a><a href="../ee/">Electrical Eng.</a><a href="../neuroscience/" aria-current="page">Neuroscience</a></div></div></nav>
+
+<div class="shell">
+<nav class="rail" aria-label="Levels">
+  <div class="brand">Neuroscience Ladder<small>Climb in order. Each rung uses the last.</small></div>
+  <ol class="ladder" id="ladder"></ol>
+  <div class="tools">
+    <label class="toggle"><input type="checkbox" id="essentials"> Essentials only</label>
+    <span class="mono progress-txt" id="progressTxt">0 of 12 levels understood</span>
+  </div>
+</nav>
+
+<main>
+<!-- ================= LEVEL 0 ================= -->
+<header class="hero level" id="L0" data-title="Start here" style="border-top:0">
+  <span class="eyebrow">Level 0 · The one idea everything hangs on</span>
+  <h1>The brain is a prediction machine.</h1>
+  <p class="lede">It builds a model of the world, runs simulations on that model, picks the simulation that turns out best, acts, and then learns from the gap between what it predicted and what actually happened. Every level below explains one piece of that loop, starting from a single cell.</p>
+  <ol class="loop" aria-label="The prediction loop">
+    <li><a href="#L1">Signal <span>L1–3</span></a></li>
+    <li><a href="#L5">Model <span>L4–5</span></a></li>
+    <li><a href="#L6">Sense <span>L6</span></a></li>
+    <li><a href="#L7">Value <span>L7</span></a></li>
+    <li><a href="#L8">Simulate &amp; act <span>L8</span></a></li>
+    <li><a href="#L9">Remember <span>L9</span></a></li>
+    <li><span class="back">↺ learn from the error, repeat</span></li>
+  </ol>
+  <div class="legend" aria-label="How importance is shown">
+    <span><span class="sw core"></span><b>Core</b> · the sentence to remember from each level</span>
+    <span><span class="sw key"></span><b>Key</b> · what you need to explain the core</span>
+    <span><span class="sw det"></span><b>Detail</b> · depth for later; hidden by "Essentials only"</span>
+    <span><span class="mine">your notes</span> came from your notes · <span class="added">added</span> fills a gap</span>
+  </div>
+</header>
+
+<!-- ================= LEVEL 1 ================= -->
+<section class="level" id="L1" data-title="The neuron">
+  <div class="level-head">
+    <span class="lvl-num">01</span>
+    <h2>The neuron</h2>
+    <p class="q">How does one cell turn inputs into a decision to fire?</p>
+    <div class="builds">Builds on: nothing. This is the ground floor.</div>
+  </div>
+  <div class="core"><span class="tag">Core</span>
+    <p>A neuron <b>collects</b> signals on its dendrites, <b>adds them up</b> at the axon hillock, and if the total crosses a <b>threshold (≈ −55 mV)</b> it fires an <b>all-or-nothing spike</b> down its axon. Strength is coded by <b>how often</b> it fires, never by how big the spike is.</p>
+  </div>
+  <div class="grid2">
+    <div class="key"><h3><span class="t">Key · anatomy</span>Parts, in the order a signal travels <span class="added">added</span></h3>
+      <ol>
+        <li><b>Dendrites</b> receive inputs from other neurons.</li>
+        <li><b>Soma</b> (cell body) keeps the cell alive and pools the inputs.</li>
+        <li><b>Axon hillock</b> is the decision point where the threshold is tested.</li>
+        <li><b>Axon</b>, often wrapped in <b>myelin</b>, carries the spike away.</li>
+        <li><b>Axon terminals</b> release chemicals onto the next cell (Level 2).</li>
+      </ol>
+    </div>
+    <div class="key"><h3><span class="t">Key · the battery</span>Resting potential ≈ −70 mV <span class="added">added</span></h3>
+      <p>The inside of the cell sits negative relative to outside. Two things hold it there:</p>
+      <ul>
+        <li>The <b>Na⁺/K⁺ pump</b> pushes 3 Na⁺ out for every 2 K⁺ in.</li>
+        <li><b>K⁺ leak channels</b> let positive K⁺ drift out.</li>
+      </ul>
+      <p>Result: lots of Na⁺ waiting outside, ready to rush in when gates open.</p>
+    </div>
+  </div>
+  <div class="key"><h3><span class="t">Key · the spike</span>Action potential, step by step <span class="added">added</span></h3>
+    <ol>
+      <li><b>Threshold:</b> inputs push the hillock from −70 to about −55 mV.</li>
+      <li><b>Rising phase:</b> voltage-gated <b style="color:var(--excite)">Na⁺ channels</b> open, Na⁺ floods in, voltage shoots to about +40 mV.</li>
+      <li><b>Falling phase:</b> Na⁺ channels shut (inactivate) and slower <b style="color:var(--inhib)">K⁺ channels</b> open, K⁺ flows out.</li>
+      <li><b>Undershoot:</b> K⁺ channels close late, so voltage dips below rest.</li>
+      <li><b>Refractory period:</b> for ~1–2 ms another spike is impossible, then harder than usual. This keeps spikes moving one way and caps the firing rate.</li>
+    </ol>
+  </div>
+
+  <div class="lab" id="hhLab">
+    <div class="lab-head"><h3>Fire a neuron</h3><span class="mono">Interactive · Hodgkin–Huxley model</span></div>
+    <p class="how">This is the real 1952 squid-axon model that won a Nobel Prize. Inject a pulse of current and watch the voltage. Try a pulse that is too weak, then just strong enough. Then add a second pulse and shrink the gap until it fails: that is the refractory period.</p>
+    <div class="controls">
+      <label class="ctl">Pulse strength <output id="hhAo"></output><input type="range" id="hhA" min="0" max="30" step="0.5" value="10"></label>
+      <label class="ctl">Pulse length <output id="hhWo"></output><input type="range" id="hhW" min="0.2" max="5" step="0.1" value="1"></label>
+      <label class="ctl">Second pulse after <output id="hhGo"></output><input type="range" id="hhG" min="0" max="25" step="0.5" value="0"></label>
+    </div>
+    <canvas id="hhC" style="height:300px" aria-label="Membrane voltage and ion channel traces over 40 milliseconds"></canvas>
+    <div class="readout"><span>Spikes fired: <b id="hhN">0</b></span><span>Peak voltage: <b id="hhP">0</b></span><span><b style="color:var(--signal)">━</b> voltage</span><span><b style="color:var(--excite)">━</b> Na⁺ conductance</span><span><b style="color:var(--inhib)">━</b> K⁺ conductance</span></div>
+    <p class="explain" id="hhE"></p>
+  </div>
+
+  <details class="ex"><summary>Example <span class="k">rate coding</span> · Touching a warm mug vs. a hot pan</summary><div>
+    <p>A heat-sensing neuron in your fingertip fires every spike at the same size. A warm mug might drive it at 10 spikes per second; a hot pan at 200. Your brain reads intensity from the rate. You saw the same idea in your notes about the retina: light in the right spot "increases signal frequency".</p></div></details>
+
+  <div class="grid2">
+    <div class="det"><h3><span class="t">Detail</span>Myelin makes spikes fast</h3>
+      <p>Myelin insulates the axon, so the spike jumps between gaps (nodes of Ranvier). This is <i>saltatory conduction</i>: up to ~120 m/s, versus ~1 m/s bare. In multiple sclerosis the immune system strips myelin and signals slow or fail. Practice also adds myelin to heavily used pathways.</p></div>
+    <div class="det"><h3><span class="t">Detail</span>Glia, the support crew</h3>
+      <p><b>Astrocytes</b> feed neurons and clean up transmitter. <b>Oligodendrocytes</b> (brain) and <b>Schwann cells</b> (body) make myelin. <b>Microglia</b> are immune cells that also prune unused synapses.</p></div>
+  </div>
+  <div class="check"><h4>Check yourself</h4>
+    <details><summary>Why can't a stronger stimulus make a bigger spike?</summary><p>Once threshold is crossed, the Na⁺ channels open in a self-reinforcing burst that always runs to the same peak. Intensity is carried by spike rate instead.</p></details>
+    <details><summary>Which ion causes the rising phase, and which the falling phase?</summary><p>Na⁺ rushing in raises the voltage; K⁺ flowing out brings it back down.</p></details>
+    <details><summary>What would happen with no refractory period?</summary><p>A spike could re-trigger the patch of axon behind it and travel backward, and firing rates would have no ceiling.</p></details>
+  </div>
+  <button class="btn mastery" data-master="L1">Mark level 1 as understood</button>
+</section>
+
+<!-- ================= LEVEL 2 ================= -->
+<section class="level" id="L2" data-title="Synapses">
+  <div class="level-head">
+    <span class="lvl-num">02</span>
+    <h2>Synapses &amp; signaling</h2>
+    <p class="q">How does one neuron change what another neuron does?</p>
+    <div class="builds">Builds on: <a href="#L1">01 The neuron</a></div>
+  </div>
+  <div class="core"><span class="tag">Core</span>
+    <p>At a synapse, a spike releases <b>neurotransmitter</b> that nudges the next cell's voltage <b>up (excitatory)</b> or <b>down (inhibitory)</b>. Each neuron is constantly <b>summing thousands of nudges</b> and only fires when excitation wins by enough.</p>
+  </div>
+  <div class="grid2">
+    <div class="key"><h3><span class="t">Key · the handoff</span>Chemical transmission in 5 steps <span class="added">added</span></h3>
+      <ol>
+        <li>Spike reaches the axon terminal.</li>
+        <li>Ca²⁺ rushes in.</li>
+        <li>Vesicles fuse and dump transmitter into the cleft.</li>
+        <li>Transmitter binds receptors on the next cell, opening ion channels.</li>
+        <li>It is cleared by reuptake or enzymes, so the signal is brief.</li>
+      </ol>
+    </div>
+    <div class="key"><h3><span class="t">Key · summation</span>Adding up inputs <span class="added">added</span></h3>
+      <ul>
+        <li><b style="color:var(--excite)">EPSP</b>: a small push toward threshold (usually glutamate).</li>
+        <li><b style="color:var(--inhib)">IPSP</b>: a small push away from it (usually GABA).</li>
+        <li><b>Temporal summation</b>: inputs arriving close together in time stack before they fade.</li>
+        <li><b>Spatial summation</b>: inputs from many synapses at once stack.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="lab" id="lifLab">
+    <div class="lab-head"><h3>Sum inputs to threshold</h3><span class="mono">Interactive · leaky integrate-and-fire</span></div>
+    <p class="how">One excitatory input is not enough. Click it several times quickly and the bumps stack before they leak away. Then try mixing in inhibition and see how much harder firing becomes.</p>
+    <div class="controls">
+      <button class="btn ex" id="lifE">+ Excitatory input</button>
+      <button class="btn ex" id="lifB">+ Burst of 3</button>
+      <button class="btn in" id="lifI">− Inhibitory input</button>
+      <button class="btn" id="lifS" aria-pressed="false">Steady background input</button>
+    </div>
+    <canvas id="lifC" style="height:220px" aria-label="Membrane voltage scrolling over time"></canvas>
+    <div class="readout"><span>Voltage: <b id="lifV">−70 mV</b></span><span>Spikes: <b id="lifN">0</b></span><span>Threshold: <b>−55 mV</b> (dashed)</span></div>
+  </div>
+  <div class="key"><h3><span class="t">Key · the cast</span>Neurotransmitters to know <span class="added">added</span></h3>
+    <div class="tbl"><table>
+      <thead><tr><th>Transmitter</th><th>Main effect</th><th>Where it shows up on this page</th></tr></thead>
+      <tbody>
+        <tr><td><b>Glutamate</b></td><td>Main excitatory signal in the brain</td><td>Almost every cortical connection; learning via NMDA receptors (L3)</td></tr>
+        <tr><td><b>GABA</b></td><td>Main inhibitory signal</td><td>Sharpening line detectors in V1 (L6); basal ganglia gating (L8)</td></tr>
+        <tr><td><b>Dopamine</b></td><td>Reward prediction error, motivation, movement</td><td>Teaching signal for the basal ganglia (L7, L8)</td></tr>
+        <tr><td><b>Serotonin</b></td><td>Mood, sleep, appetite, patience</td><td>Broad modulator from the brainstem</td></tr>
+        <tr><td><b>Acetylcholine</b></td><td>Muscle contraction; attention and memory</td><td>Every voluntary movement; hippocampal learning (L9)</td></tr>
+        <tr><td><b>Norepinephrine</b></td><td>Arousal, alertness, fight-or-flight</td><td>Amygdala-driven threat responses (L7)</td></tr>
+      </tbody></table></div>
+  </div>
+  <details class="ex"><summary>Example <span class="k">drugs at the synapse</span> · How SSRIs and L-DOPA work</summary><div>
+    <p><b>SSRIs</b> (like fluoxetine) block serotonin reuptake (step 5), so serotonin lingers in the cleft longer.</p>
+    <p><b>Parkinson's disease</b> kills dopamine neurons that feed the basal ganglia, so people struggle to start movements. <b>L-DOPA</b> is a building block the surviving cells turn into extra dopamine.</p></div></details>
+  <details class="ex"><summary>Example <span class="k">inhibition matters</span> · Why seizures happen</summary><div>
+    <p>When inhibition fails (low GABA activity), excitation spreads unchecked and huge populations fire together: a seizure. Many anti-seizure drugs and benzodiazepines work by boosting GABA. Healthy thinking depends on a careful balance of excitation and inhibition.</p></div></details>
+  <div class="check"><h4>Check yourself</h4>
+    <details><summary>Why did one excitatory click fail but three quick ones work?</summary><p>Each EPSP leaks away within tens of milliseconds. Arriving close together, they stack (temporal summation) past −55 mV.</p></details>
+    <details><summary>What is the difference between an EPSP and an action potential?</summary><p>An EPSP is small, graded, and fades with distance and time. An action potential is all-or-nothing and travels the full length of the axon.</p></details>
+  </div>
+  <button class="btn mastery" data-master="L2">Mark level 2 as understood</button>
+</section>
+
+<!-- ================= LEVEL 3 ================= -->
+<section class="level" id="L3" data-title="Learning in circuits">
+  <div class="level-head">
+    <span class="lvl-num">03</span>
+    <h2>Learning in circuits</h2>
+    <p class="q">If neurons just sum and fire, where does learning live?</p>
+    <div class="builds">Builds on: <a href="#L2">02 Synapses</a></div>
+  </div>
+  <div class="core"><span class="tag">Core</span>
+    <p>Learning is <b>changing synapse strengths</b>. "Neurons that fire together wire together": connections that help a cell fire get stronger, unused ones weaken and get pruned. Two learning systems sit on top of this: <b>model-free</b> (repeat what got rewarded) and <b>model-based</b> (simulate first, then choose).</p>
+  </div>
+  <div class="grid2">
+    <div class="key"><h3><span class="t">Key · the mechanism</span>LTP and the NMDA receptor <span class="added">added</span></h3>
+      <p><b>Long-term potentiation (LTP)</b>: repeatedly activating a synapse makes it stronger for hours to years.</p>
+      <p>The <b>NMDA receptor</b> is a coincidence detector. It opens only when (1) glutamate is bound <i>and</i> (2) the receiving cell is already depolarized. Then Ca²⁺ enters and the cell adds more receptors to that synapse. So it only strengthens connections that were active <i>when the cell fired</i>.</p>
+      <p><b>LTD</b> (long-term depression) is the reverse and weakens synapses.</p>
+    </div>
+    <div class="key"><h3><span class="t">Key · use it or lose it</span>Practice reshapes the cortex <span class="mine">your notes</span></h3>
+      <p>Learning a skill well can grow the region of cortex that does it.</p>
+      <ul>
+        <li>Children overproduce synapses, then <b>prune</b> the unused ones.</li>
+        <li>Heavily used paths gain myelin and get faster.</li>
+        <li>Unused territory gets taken over by neighbors.</li>
+      </ul>
+      <details class="ex"><summary>Example · Taxi drivers and violinists</summary><div>
+        <p>London taxi drivers who memorized the city's 25,000 streets had a larger posterior hippocampus, and it grew with years on the job. String players have an enlarged cortical map for the fingers of the left hand, the hand that does the fine fingering.</p></div></details>
+    </div>
+  </div>
+  <div class="key"><h3><span class="t">Key · two ways to learn</span>Model-free vs. model-based <span class="mine">your notes</span></h3>
+    <div class="tbl"><table>
+      <thead><tr><th></th><th>Model-free (habit)</th><th>Model-based (simulation)</th></tr></thead>
+      <tbody>
+        <tr><td><b>Rule</b></td><td>Repeat what was rewarded before</td><td>Imagine outcomes, pick the best</td></tr>
+        <tr><td><b>Speed</b></td><td>Fast, automatic</td><td>Slow, effortful</td></tr>
+        <tr><td><b>Flexibility</b></td><td>Poor; keeps going when the world changes</td><td>High; adapts instantly to new info</td></tr>
+        <tr><td><b>Brain</b></td><td>Basal ganglia → motor cortex</td><td>Prefrontal cortex + hippocampus + sensory cortex</td></tr>
+        <tr><td><b>Covered in</b></td><td><a href="#L8">Level 8</a> habits</td><td><a href="#L8">Level 8</a> vicarious trial and error</td></tr>
+      </tbody></table></div>
+    <p>Keep this table in mind. Most of the rest of the page is about how these two systems are built and how one trains the other.</p>
+  </div>
+  <details class="ex"><summary>Example <span class="k">both systems</span> · Learning to drive</summary><div>
+    <p>Week one: every lane change is model-based. You picture the mirror, the gap, the car behind, and you are exhausted after 20 minutes. Year five: lane changes are model-free and you hold a conversation while doing them. The same synapse-strengthening rule drove both, in different circuits.</p></div></details>
+  <div class="det"><h3><span class="t">Detail</span>Critical periods</h3>
+    <p>Some circuits only wire properly during a window early in life. A kitten with one eye covered for its first months never develops normal vision in that eye, even after the cover is removed. Your notes mention a related case: the aPFC loses its layer 4 in the first 6–12 months (see <a href="#L8">Level 8</a>).</p></div>
+  <div class="check"><h4>Check yourself</h4>
+    <details><summary>Why does the NMDA receptor need two conditions?</summary><p>So a synapse strengthens only when its input actually helped the cell fire. Input alone, or firing alone, is not enough. That is "fire together, wire together" in hardware.</p></details>
+    <details><summary>Which system is in charge when you drive home on autopilot?</summary><p>Model-free. The basal ganglia run a well-rewarded sequence without consulting a simulation.</p></details>
+  </div>
+  <button class="btn mastery" data-master="L3">Mark level 3 as understood</button>
+</section>
+
+<!-- ================= LEVEL 4 ================= -->
+<section class="level" id="L4" data-title="Brain map">
+  <div class="level-head">
+    <span class="lvl-num">04</span>
+    <h2>The brain map</h2>
+    <p class="q">Where do billions of these circuits live, and what does each region do?</p>
+    <div class="builds">Builds on: <a href="#L3">03 Learning</a> · zooms out from cells to regions</div>
+  </div>
+  <div class="core"><span class="tag">Core</span>
+    <p>The <b>cortex</b> (outer sheet, four lobes per side) builds the model of the world. <b>Deep structures</b> filter input (thalamus), tag what matters (amygdala, hypothalamus), store new memories (hippocampus) and run automatic actions (basal ganglia). The <b>cerebellum and brainstem</b> handle coordination and survival.</p>
+  </div>
+
+  <div class="lab">
+    <div class="lab-head"><h3>Explore the brain</h3><span class="mono">Interactive · left side view, front of head on the left</span></div>
+    <p class="how">Click a lobe or a labeled area. Deep structures are hidden inside, so pick them from the dashed chips and their rough position appears as a ghost outline.</p>
+    <div class="brainlab">
+      <div class="svgwrap">
+        <svg class="brain-svg" id="brainSvg" viewBox="0 0 600 400" role="img" aria-label="Side view of the brain with clickable regions" style="width:100%;min-width:300px">
+          <path class="lobe" data-r="brainstem" d="M362,300 C372,322 378,352 384,392 L414,392 C406,352 404,322 414,298 Z"/>
+          <path class="lobe" data-r="cerebellum" d="M428,288 C470,276 524,282 544,302 C550,328 512,350 470,348 C438,344 418,318 428,288 Z"/>
+          <path class="lobe" data-r="frontal" d="M60,235 C30,170 70,95 160,62 C220,42 290,38 335,44 L300,140 L272,212 C230,222 190,232 160,248 C120,250 85,248 60,235 Z"/>
+          <path class="lobe" data-r="parietal" d="M335,44 C400,48 450,62 485,92 L470,175 L455,220 L380,215 L272,212 L300,140 Z"/>
+          <path class="lobe" data-r="occipital" d="M485,92 C530,125 565,175 560,215 C552,250 525,270 495,275 L455,220 L470,175 Z"/>
+          <path class="lobe" data-r="temporal" d="M160,248 C190,232 230,222 272,212 L380,215 L455,220 L495,275 C460,300 400,318 330,320 C260,320 200,305 165,280 C150,270 150,258 160,248 Z"/>
+          <path class="area" data-r="motor" d="M318,46 L302,46 L264,208 L280,208 Z"/>
+          <path class="area" data-r="somato" d="M338,46 L322,46 L284,208 L300,208 Z"/>
+          <ellipse class="area" data-r="broca" cx="218" cy="210" rx="26" ry="16"/>
+          <ellipse class="area" data-r="wernicke" cx="405" cy="238" rx="28" ry="16"/>
+          <ellipse class="area" data-r="v1" cx="540" cy="205" rx="18" ry="34"/>
+          <ellipse class="area" data-r="pfc" cx="120" cy="150" rx="42" ry="48"/>
+          <g id="ghosts">
+            <ellipse class="ghost" data-r="cingulate" cx="310" cy="118" rx="120" ry="18" hidden/>
+            <ellipse class="ghost" data-r="bg" cx="275" cy="165" rx="34" ry="24" hidden/>
+            <ellipse class="ghost" data-r="thalamus" cx="335" cy="168" rx="24" ry="16" hidden/>
+            <ellipse class="ghost" data-r="hypothalamus" cx="300" cy="205" rx="16" ry="10" hidden/>
+            <ellipse class="ghost" data-r="amygdala" cx="292" cy="250" rx="13" ry="11" hidden/>
+            <path class="ghost" data-r="hippocampus" d="M310,252 C340,236 380,236 410,250 C400,262 360,258 318,262 Z" hidden/>
+            <ellipse class="ghost" data-r="entorhinal" cx="300" cy="276" rx="22" ry="9" hidden/>
+          </g>
+          <text class="lbl" x="150" y="120">Frontal</text>
+          <text class="lbl" x="372" y="110">Parietal</text>
+          <text class="lbl" x="490" y="170">Occipital</text>
+          <text class="lbl" x="250" y="290">Temporal</text>
+          <text class="lbl sm" x="450" y="320">Cerebellum</text>
+          <text class="lbl sm" x="318" y="380">Brainstem</text>
+          <text class="lbl sm" x="196" y="236">Broca</text>
+          <text class="lbl sm" x="380" y="264">Wernicke</text>
+          <text class="lbl sm" x="530" y="252">V1</text>
+          <text class="lbl sm" x="94" y="206">Prefrontal</text>
+        </svg>
+      </div>
+      <div class="info">
+        <div class="chips" id="lobeChips"></div>
+        <div class="chips" id="deepChips"></div>
+        <div id="brainInfo" class="info" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="key"><h3><span class="t">Key · the four lobes</span>Cortex at a glance <span class="mine">your notes</span></h3>
+    <div class="tbl"><table>
+      <thead><tr><th>Lobe</th><th>Job</th><th>Landmarks</th></tr></thead>
+      <tbody>
+        <tr><td><b>Frontal</b></td><td>Planning; controls which simulations run and when; movement</td><td>Prefrontal cortex, premotor and motor cortex, Broca's area</td></tr>
+        <tr><td><b>Parietal</b></td><td>Touch, temperature, pain, spatial awareness</td><td>Somatosensory strip; end of the dorsal "where" stream</td></tr>
+        <tr><td><b>Temporal</b></td><td>Hearing, language comprehension, recognizing objects</td><td>Auditory cortex, Wernicke's area; hippocampus and amygdala tucked inside</td></tr>
+        <tr><td><b>Occipital</b></td><td>Vision</td><td>V1 at the very back, then V2, V3, V4</td></tr>
+      </tbody></table></div>
+  </div>
+  <div class="grid2">
+    <div class="key"><h3><span class="t">Key · deep structures</span>Under the cortex <span class="mine">your notes</span></h3>
+      <ul>
+        <li><b>Thalamus</b>: the gateway that filters sensory data before it reaches cortex. Every sense except smell passes through.</li>
+        <li><b>Hypothalamus</b>: body state and drives (hunger, thirst, temperature, sleep, hormones).</li>
+        <li><b>Amygdala</b>: fear, aggression, emotional importance.</li>
+        <li><b>Hippocampus</b>: turns short-term experiences into long-term memories.</li>
+        <li><b>Cingulate gyrus</b>: regulates emotion and pain, predicts bad outcomes.</li>
+        <li><b>Basal ganglia</b>: the automatic, model-free center for goals and execution.</li>
+      </ul>
+    </div>
+    <div class="key"><h3><span class="t">Key · thalamic relays</span>One relay per sense <span class="mine">your notes</span></h3>
+      <div class="tbl"><table>
+        <thead><tr><th>Nucleus</th><th>Carries</th><th>To</th></tr></thead>
+        <tbody>
+          <tr><td><b>LGN</b> lateral geniculate</td><td>Vision</td><td>V1, occipital</td></tr>
+          <tr><td><b>MGN</b> medial geniculate</td><td>Hearing</td><td>Auditory cortex, temporal</td></tr>
+          <tr><td><b>VP</b> ventral posterior</td><td>Touch, pain, temperature</td><td>Somatosensory, parietal</td></tr>
+          <tr><td><b>None</b></td><td>Smell</td><td>Straight to olfactory cortex</td></tr>
+        </tbody></table></div>
+      <p class="mono" style="color:var(--muted)">Memory hook: <b>L</b>GN = <b>L</b>ight, <b>M</b>GN = <b>M</b>usic.</p>
+    </div>
+  </div>
+  <p class="note"><b>Correction to your notes:</b> the hypothalamus is mainly about keeping the body in balance (homeostasis) and producing the bodily side of emotions, like a racing heart. Predicting and regulating emotion is more the job of the cingulate and prefrontal cortex.</p>
+  <div class="grid2">
+    <div class="det"><h3><span class="t">Detail</span>Crossed wiring <span class="added">added</span></h3>
+      <p>Each hemisphere senses and moves the <b>opposite</b> side of the body. A stroke in the left motor cortex weakens the right arm. The <b>corpus callosum</b>, a thick bundle of ~200 million axons, links the two halves.</p></div>
+    <div class="det"><h3><span class="t">Detail</span>Cerebellum and brainstem <span class="added">added</span></h3>
+      <p>The <b>cerebellum</b> holds about 80% of the brain's neurons and fine-tunes timing and coordination. The <b>brainstem</b> (midbrain, pons, medulla) runs breathing, heart rate and wakefulness, and its midbrain holds the dopamine neurons from Level 7.</p></div>
+  </div>
+  <details class="ex"><summary>Example <span class="k">maps inside the map</span> · The homunculus</summary><div>
+    <p>The motor strip and the touch strip each hold a map of the body, but scaled by how much control or sensitivity each part needs. Lips, tongue and hands take up huge areas; the back and legs get very little. That is why a paper cut on a fingertip feels worse than one on your shin.</p></div></details>
+  <div class="check"><h4>Check yourself</h4>
+    <details><summary>Which sense skips the thalamus?</summary><p>Smell. It goes directly to olfactory cortex, one reason smells trigger memories and emotions so quickly.</p></details>
+    <details><summary>Damage to the left occipital lobe affects which part of what you see?</summary><p>The right half of your visual field in both eyes, because of crossed wiring.</p></details>
+  </div>
+  <button class="btn mastery" data-master="L4">Mark level 4 as understood</button>
+</section>
+
+<!-- ================= LEVEL 5 ================= -->
+<section class="level" id="L5" data-title="The neocortex">
+  <div class="level-head">
+    <span class="lvl-num">05</span>
+    <h2>The neocortex</h2>
+    <p class="q">What is the repeating unit that builds the model of the world?</p>
+    <div class="builds">Builds on: <a href="#L4">04 Brain map</a> <a href="#L3">03 Learning</a></div>
+  </div>
+  <div class="core"><span class="tag">Core</span>
+    <p>About <b>90% of cortex is neocortex</b>, a sheet tiled with <b>columns</b> that all share <b>the same six-layer circuit</b>. Each column seems to run one algorithm: <b>predict its input</b>. Because the circuit is the same everywhere, a region's job depends mostly on <b>what input it receives</b>.</p>
+  </div>
+  <details class="ex"><summary>Example <span class="k">same circuit everywhere</span> · Ferrets that see with their hearing cortex</summary><div>
+    <p>In 2000, researchers rerouted the eye's input in newborn ferrets so it went to auditory cortex instead of visual cortex. The auditory cortex grew line-detecting cells like V1 and the ferrets used it to see. Sensory-substitution devices do something similar for people: blind users of a tongue display that turns camera images into tingles learn to "see" shapes, and their visual cortex becomes active.</p></div></details>
+
+  <div class="lab">
+    <div class="lab-head"><h3>Inside a cortical column</h3><span class="mono">Interactive · click a layer or trace a signal</span></div>
+    <p class="how">Click any layer to light up what feeds it and where it sends its output. Or step through the full path a sensory signal takes.</p>
+    <div class="controls"><button class="btn pri" id="trBtn">Trace a signal, step 1</button><button class="btn" id="trReset">Clear</button></div>
+    <div class="svgwrap">
+      <svg class="layers-svg" id="layerSvg" viewBox="0 0 640 430" role="img" aria-label="Six cortical layers with input and output connections" style="width:100%;min-width:520px">
+        <defs>
+          <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="context-stroke"/></marker>
+        </defs>
+        <g id="bands"></g>
+        <rect class="box" x="160" y="378" width="200" height="40" rx="8"/><text class="ltxt" x="260" y="403" text-anchor="middle">Thalamus</text>
+        <rect class="box" x="490" y="22" width="140" height="56" rx="8"/><text class="ltxt" x="560" y="46" text-anchor="middle">Higher cortex</text><text class="lsub" x="560" y="64" text-anchor="middle">feedback in</text>
+        <rect class="box" x="490" y="92" width="140" height="44" rx="8"/><text class="ltxt" x="560" y="119" text-anchor="middle">Other cortex</text>
+        <rect class="box" x="490" y="218" width="140" height="56" rx="8"/><text class="ltxt" x="560" y="242" text-anchor="middle">Basal ganglia,</text><text class="lsub" x="560" y="260" text-anchor="middle">brainstem, spinal cord</text>
+        <path class="arrow" data-a="th-4" marker-end="url(#ah)" d="M200,378 L200,178"/>
+        <path class="arrow" data-a="4-23" marker-end="url(#ah)" d="M245,160 L245,108"/>
+        <path class="arrow" data-a="23-ctx" marker-end="url(#ah)" d="M440,112 L488,112"/>
+        <path class="arrow" data-a="23-5" marker-end="url(#ah)" d="M300,122 L300,228"/>
+        <path class="arrow" data-a="5-bg" marker-end="url(#ah)" d="M440,246 L488,246"/>
+        <path class="arrow" data-a="5-6" marker-end="url(#ah)" d="M350,262 L350,302"/>
+        <path class="arrow" data-a="6-th" marker-end="url(#ah)" d="M300,340 L300,376"/>
+        <path class="arrow" data-a="th-6" marker-end="url(#ah)" d="M240,378 L240,320"/>
+        <path class="arrow" data-a="fb-1" marker-end="url(#ah)" d="M488,40 L442,40"/>
+        <path class="arrow" data-a="1-5" marker-end="url(#ah)" stroke-dasharray="4 4" d="M400,44 L400,232"/>
+      </svg>
+    </div>
+    <p class="explain" id="layerE">Click a layer, or press "Trace a signal".</p>
+  </div>
+
+  <div class="key"><h3><span class="t">Key · the six layers</span>Inputs and outputs <span class="mine">your notes</span></h3>
+    <div class="tbl"><table>
+      <thead><tr><th>Layer</th><th>Gets input from</th><th>Sends output to</th><th>Role in one phrase</th></tr></thead>
+      <tbody>
+        <tr><td><b>1</b></td><td>Feedback from higher regions</td><td>Apical dendrites of L2/3 and L5 cells</td><td>Where expectations arrive</td></tr>
+        <tr><td><b>2/3</b></td><td>Layer 4</td><td>Other cortical areas; layer 5</td><td>Combines features, talks to cortex</td></tr>
+        <tr><td><b>4</b></td><td>Thalamus (main sensory input)</td><td>Layer 2/3</td><td>Front door for sensory data</td></tr>
+        <tr><td><b>5</b></td><td>Layer 2/3 (and L1 feedback)</td><td>Basal ganglia, brainstem, other cortex, layer 6</td><td>Main output to action systems</td></tr>
+        <tr><td><b>6</b></td><td>Thalamus and layer 5</td><td>Thalamus</td><td>Turns the gain up or down</td></tr>
+      </tbody></table></div>
+    <p>Every layer also has <b>horizontal connections</b> to neighboring columns, which lets nearby columns agree on an interpretation.</p>
+  </div>
+  <p class="note"><b>Upgrade to your notes:</b> layer 1 has few cell bodies, but it matters. It is where feedback from higher regions lands on the tips of L2/3 and L5 dendrites, which is how predictions from "above" shape what a column reports.</p>
+  <div class="grid2">
+    <div class="key"><h3><span class="t">Key · a control loop</span>Thalamus ⇄ cortex</h3>
+      <p>Layer 4 takes input from the thalamus, and layer 6 sends output back to it. That loop lets the cortex adjust what the thalamus passes along, turning some channels up and others down. It is a strong candidate for how <b>attention</b> works.</p></div>
+    <div class="det"><h3><span class="t">Detail</span>Granular vs. agranular <span class="mine">your notes</span></h3>
+      <p>"Granular" cortex has a visible layer 4, packed with small granule cells. <b>Motor cortex and the agranular prefrontal cortex (aPFC) lack it.</b> That fits their role: they mostly produce output rather than take raw sensory input.</p></div>
+  </div>
+  <div class="check"><h4>Check yourself</h4>
+    <details><summary>A column's only sensory input arrives in which layer, from where?</summary><p>Layer 4, from the thalamus.</p></details>
+    <details><summary>Which layer would you damage to stop cortex from driving the basal ganglia?</summary><p>Layer 5, the main output to subcortical structures.</p></details>
+    <details><summary>What does the ferret experiment suggest about cortex?</summary><p>The circuit is general purpose. Its function comes from its input, so regions differ by wiring, not by kind.</p></details>
+  </div>
+  <button class="btn mastery" data-master="L5">Mark level 5 as understood</button>
+</section>
+
+<!-- ================= LEVEL 6 ================= -->
+<section class="level" id="L6" data-title="Seeing">
+  <div class="level-head">
+    <span class="lvl-num">06</span>
+    <h2>Seeing: the cortex in action</h2>
+    <p class="q">How do columns turn spots of light into a recognized object?</p>
+    <div class="builds">Builds on: <a href="#L5">05 Neocortex</a> <a href="#L2">02 Inhibition</a></div>
+  </div>
+  <div class="core"><span class="tag">Core</span>
+    <p>Vision is built in <b>stages</b>, each combining the simpler features below it: <b>spots → lines → contours → shapes and motion → objects and color</b>. Then it splits: the <b>ventral stream</b> to the temporal lobe asks <b>"what is it?"</b>, the <b>dorsal stream</b> to the parietal lobe asks <b>"where is it, and how do I reach it?"</b></p>
+  </div>
+  <ol class="pipe" aria-label="Visual pathway">
+    <li><b>Retina</b><span>Center-surround spot detectors</span></li>
+    <li><b>LGN</b><span>Thalamic relay, gain set by L6</span></li>
+    <li class="hl"><b>V1</b><span>Lines and edges at one angle</span></li>
+    <li><b>V2</b><span>Contours, patterns, illusory edges</span></li>
+    <li><b>V3 · MT</b><span>Shape in motion · direction and speed</span></li>
+    <li><b>V4</b><span>Color, complex shape</span></li>
+    <li><b>Streams</b><span>Ventral: what · Dorsal: where</span></li>
+  </ol>
+
+  <div class="lab">
+    <div class="lab-head"><h3>Stage 1: a retinal ganglion cell</h3><span class="mono">Interactive · center-surround receptive field</span></div>
+    <p class="how">Shine a spot of light on the cell's receptive field and grow it. Light on the center excites; light on the surround suppresses. The best response comes from a spot that exactly fills the center.</p>
+    <div class="controls">
+      <label class="ctl">Spot size <output id="rfSo"></output><input type="range" id="rfS" min="0" max="60" step="1" value="14"></label>
+      <div class="seg" role="group" aria-label="Cell type"><button id="rfOn" aria-pressed="true">ON-center</button><button id="rfOff" aria-pressed="false">OFF-center</button></div>
+    </div>
+    <div class="grid2" style="align-items:center">
+      <svg id="rfSvg" viewBox="0 0 200 200" style="max-width:240px;width:100%;justify-self:center" role="img" aria-label="Receptive field with light spot">
+        <circle cx="100" cy="100" r="90" fill="var(--surface-2)" stroke="var(--line)"/>
+        <circle id="rfSur" cx="100" cy="100" r="75" fill="none" stroke="var(--inhib)" stroke-width="2" stroke-dasharray="4 4"/>
+        <circle id="rfCen" cx="100" cy="100" r="30" fill="none" stroke="var(--excite)" stroke-width="2"/>
+        <circle id="rfSpot" cx="100" cy="100" r="20" fill="var(--signal)" fill-opacity=".55"/>
+        <text id="rfCl" x="100" y="104" text-anchor="middle" font-size="11" fill="var(--ink)">+</text>
+        <text id="rfSl" x="100" y="40" text-anchor="middle" font-size="11" fill="var(--ink)">−</text>
+      </svg>
+      <canvas id="rfC" style="height:200px" aria-label="Firing rate versus spot size"></canvas>
+    </div>
+    <div class="readout"><span>Firing rate: <b id="rfR"></b></span><span>Baseline: <b>20 spikes/s</b></span></div>
+  </div>
+  <p class="note"><b>Refinement to your notes:</b> the LGN still responds to spots, not lines. Lines first appear in V1, where a simple cell lines up several LGN spot-detectors along one angle, as in the model below.</p>
+
+  <div class="lab">
+    <div class="lab-head"><h3>Stage 2: V1 orientation columns</h3><span class="mono">Interactive · simple cells and inhibition</span></div>
+    <p class="how">Rotate the bar. Each of the 8 simple cells prefers one angle. Turn on lateral inhibition to see how "excite cells of this angle and inhibit cells of other angles" sharpens the answer.</p>
+    <div class="controls">
+      <label class="ctl">Bar angle <output id="orAo"></output><input type="range" id="orA" min="0" max="179" step="1" value="30"></label>
+      <button class="btn" id="orInh" aria-pressed="true">Lateral inhibition: on</button>
+    </div>
+    <div class="grid2" style="align-items:center">
+      <svg id="orSvg" viewBox="0 0 200 200" style="max-width:240px;width:100%;justify-self:center" role="img" aria-label="Bar stimulus over aligned LGN cells">
+        <circle cx="100" cy="100" r="90" fill="var(--surface-2)" stroke="var(--line)"/>
+        <g id="orLgn"></g>
+        <rect id="orBar" x="20" y="93" width="160" height="14" rx="3" fill="var(--signal)" fill-opacity=".85"/>
+      </svg>
+      <div class="tune" id="tune" aria-label="Responses of 8 orientation-tuned cells"></div>
+    </div>
+    <p class="explain" id="orE"></p>
+  </div>
+
+  <div class="grid2">
+    <div class="key"><h3><span class="t">Key · inside V1's layers</span>Your visual cortex example <span class="mine">your notes</span></h3>
+      <ol>
+        <li>Retina → LGN → <b>layer 4</b>, where simple cells build a line at one angle.</li>
+        <li><b>Layer 2/3</b> complex cells respond to the same angle anywhere in a small patch.</li>
+        <li><b>Layer 5</b> mixes in input from other cortical areas (via dendrites in L1) and sends output to the basal ganglia.</li>
+        <li><b>Layer 6</b> sets the gain on the thalamus, controlling firing rates.</li>
+      </ol></div>
+    <div class="key"><h3><span class="t">Key · two streams</span>What vs. where <span class="mine">your notes</span></h3>
+      <ul>
+        <li><b>Ventral (lower) stream</b> → temporal lobe. Identifies objects, faces, words.</li>
+        <li><b>Dorsal (upper) stream</b> → parietal lobe. Tracks location and motion and guides your hand.</li>
+      </ul>
+      <p>You need both to catch a ball: ventral says "ball", dorsal says "there, moving left, fast".</p></div>
+  </div>
+  <details class="ex"><summary>Example <span class="k">ventral damage</span> · Face blindness</summary><div>
+    <p>People with prosopagnosia can see a face clearly, describe its nose and eyes, but cannot tell whose face it is, sometimes even their own. The damage sits in the fusiform face area along the ventral stream.</p></div></details>
+  <details class="ex"><summary>Example <span class="k">MT damage</span> · Seeing the world as snapshots</summary><div>
+    <p>A patient known as L.M. lost area MT on both sides. Pouring tea looked like a frozen column of liquid; cars seemed to jump from far away to right in front of her. Shape and color were fine. Motion was simply gone.</p></div></details>
+  <details class="ex"><summary>Example <span class="k">V2 at work</span> · The Kanizsa triangle</summary><div>
+    <p>Three Pac-Man shapes facing inward make you see a bright white triangle that is not drawn. V2 cells fire for these "illusory contours", showing that the visual system fills in its best prediction rather than just reporting pixels.</p></div></details>
+  <div class="check"><h4>Check yourself</h4>
+    <details><summary>Why does a huge spot of light barely excite an ON-center cell?</summary><p>It covers the surround too, and surround inhibition cancels most of the center's excitation. These cells report contrast, not brightness.</p></details>
+    <details><summary>How does a V1 simple cell build an orientation detector?</summary><p>It receives input from several LGN spot-detectors whose centers lie along a line at one angle.</p></details>
+    <details><summary>Someone can name a mug but cannot reach for it accurately. Which stream is damaged?</summary><p>The dorsal stream.</p></details>
+  </div>
+  <button class="btn mastery" data-master="L6">Mark level 6 as understood</button>
+</section>
+
+<!-- ================= LEVEL 7 ================= -->
+<section class="level" id="L7" data-title="Feeling &amp; valuing">
+  <div class="level-head">
+    <span class="lvl-num">07</span>
+    <h2>Feeling &amp; valuing</h2>
+    <p class="q">Before planning, how does the brain know what matters?</p>
+    <div class="builds">Builds on: <a href="#L4">04 Deep structures</a> <a href="#L3">03 Learning</a></div>
+  </div>
+  <div class="core"><span class="tag">Core</span>
+    <p>Emotional systems <b>tag situations as good or bad</b>. <b>Dopamine</b> neurons broadcast the <b>reward prediction error</b>: what you got minus what you expected. That error is the brain's main <b>teaching signal</b> for the basal ganglia, and the reason surprise drives learning.</p>
+  </div>
+  <div class="grid2">
+    <div class="key"><h3><span class="t">Key · amygdala</span>Threat and salience <span class="mine">your notes</span></h3>
+      <p>Processes fear and aggression. It reacts in about 1/10 of a second, faster than conscious recognition, via a shortcut from the thalamus. It also tags memories as important, which is why emotional events are remembered so vividly.</p>
+      <details class="ex"><summary>Example · The stick that looks like a snake</summary><div><p>You jump back before you know what you saw. The thalamus-to-amygdala shortcut triggered the startle; a moment later the slower cortical route reports "just a stick" and the prefrontal cortex calms the amygdala down.</p></div></details>
+    </div>
+    <div class="key"><h3><span class="t">Key · cingulate &amp; hypothalamus</span>Alarm and body <span class="mine">your notes</span></h3>
+      <p><b>Cingulate gyrus</b>: regulates emotion and pain, notices errors and conflicts, and helps predict negative outcomes. It handles the <i>unpleasantness</i> of pain rather than its location.</p>
+      <p><b>Hypothalamus</b>: turns emotion into body changes (heart rate, stress hormones) and drives hunger, thirst, temperature and sleep.</p>
+    </div>
+  </div>
+
+  <div class="lab" id="tdLab">
+    <div class="lab-head"><h3>Train a dopamine neuron</h3><span class="mono">Interactive · temporal-difference learning</span></div>
+    <p class="how">Each trial, a light (cue) comes on, then juice (reward) arrives. Run trials and watch the dopamine burst move from the juice to the light. Once it has moved, skip the reward on one trial to see the dip.</p>
+    <div class="controls">
+      <button class="btn pri" id="tdOne">Run 1 trial</button>
+      <button class="btn" id="tdFive">Run 5 trials</button>
+      <button class="btn" id="tdOmit" aria-pressed="false">Skip the reward next trial</button>
+      <button class="btn" id="tdReset">Reset</button>
+    </div>
+    <div class="grid2">
+      <div style="display:grid;gap:6px;min-width:0"><span class="mono" style="color:var(--muted)">Dopamine firing, latest trial</span><canvas id="tdC" style="height:180px" aria-label="Dopamine response across one trial"></canvas></div>
+      <div style="display:grid;gap:6px;min-width:0"><span class="mono" style="color:var(--muted)">Burst size across trials</span><canvas id="tdH" style="height:180px" aria-label="Dopamine responses at cue and reward across trials"></canvas></div>
+    </div>
+    <div class="readout"><span>Trials: <b id="tdN">0</b></span><span>Expected value of the light: <b id="tdV">0.00</b></span><span><b style="color:var(--accent)">━</b> at light</span><span><b style="color:var(--signal)">━</b> at juice</span></div>
+    <p class="explain" id="tdE"></p>
+  </div>
+
+  <div class="key"><h3><span class="t">Key · the rule</span>Three cases of prediction error <span class="added">added</span></h3>
+    <div class="tbl"><table>
+      <thead><tr><th>What happens</th><th>Dopamine</th><th>What gets learned</th></tr></thead>
+      <tbody>
+        <tr><td>Reward better than expected</td><td>Burst ▲</td><td>Do more of what led here</td></tr>
+        <tr><td>Reward exactly as expected</td><td>No change</td><td>Nothing new</td></tr>
+        <tr><td>Reward worse than expected or missing</td><td>Dip ▼</td><td>Do less of what led here</td></tr>
+      </tbody></table></div>
+    <p>Wolfram Schultz recorded this in monkeys in the 1990s. The same equation drives reinforcement-learning algorithms in AI.</p>
+  </div>
+  <div class="key"><h3><span class="t">Key · the reward seeker</span>Front of the basal ganglia <span class="mine">your notes</span></h3>
+    <p>The front (ventral) part of the basal ganglia, centered on the <b>nucleus accumbens</b>, drives the automatic pursuit of rewards. Dopamine prediction errors train it.</p>
+    <details class="ex"><summary>Example · Addiction hijacks the teaching signal</summary><div>
+      <p>Drugs like cocaine raise dopamine directly, so the brain receives a "better than expected!" error every time, no matter how often it has been used. Cues linked to the drug pick up enormous value, and craving follows.</p>
+      <p>Your notes say lesioning the front basal ganglia completely eradicates craving. The surgical studies (nucleus accumbens ablation, mostly in China in the 2000s) reported strong reductions in craving and relapse for many patients, but results were mixed and the procedure is controversial because of side effects on motivation and pleasure.</p></div></details>
+  </div>
+  <div class="check"><h4>Check yourself</h4>
+    <details><summary>Why does a fully expected reward produce no dopamine burst?</summary><p>Dopamine reports the error, and the error is zero. Nothing needs to be learned.</p></details>
+    <details><summary>Why does the burst move to the cue?</summary><p>The cue is now the earliest reliable sign of reward, and its arrival is still unpredictable. So the surprise, and the error, happens at the cue.</p></details>
+  </div>
+  <button class="btn mastery" data-master="L7">Mark level 7 as understood</button>
+</section>
+
+<!-- ================= LEVEL 8 ================= -->
+<section class="level" id="L8" data-title="Planning &amp; acting">
+  <div class="level-head">
+    <span class="lvl-num">08</span>
+    <h2>Planning &amp; acting</h2>
+    <p class="q">How does the brain pick an action, and how does practice make it automatic?</p>
+    <div class="builds">Builds on: <a href="#L5">05 Neocortex</a> <a href="#L7">07 Value</a> <a href="#L3">03 Two systems</a></div>
+  </div>
+  <div class="core"><span class="tag">Core</span>
+    <p>If sensory cortex <b>runs the simulation</b> of the world, the <b>frontal lobe controls it</b>: it chooses what to imagine and when, compares imagined outcomes, and sends the winner down a <b>motor hierarchy</b>. With practice, the <b>basal ganglia</b> learn the move and trigger motor cortex directly. That is a <b>habit</b>.</p>
+  </div>
+  <div class="key"><h3><span class="t">Key · frontal regions</span>Three parts of the frontal neocortex <span class="mine">your notes</span></h3>
+    <div class="tbl"><table>
+      <thead><tr><th>Region</th><th>Inputs</th><th>Job</th></tr></thead>
+      <tbody>
+        <tr><td><b>aPFC</b> agranular prefrontal</td><td>Amygdala, hippocampus, basal ganglia</td><td>Holds the goal, runs simulations toward it, tracks progress. Lacks layer 4.</td></tr>
+        <tr><td><b>gPFC</b> granular prefrontal</td><td>Mostly other cortex, including aPFC</td><td>Models your own intentions and other people's minds; working memory and abstract reasoning <span class="added">added</span></td></tr>
+        <tr><td><b>Premotor</b></td><td>PFC</td><td>Simulates mid-level sub-goals and sequences</td></tr>
+        <tr><td><b>Motor cortex</b></td><td>Premotor, cerebellum (via thalamus)</td><td>Simulates then executes specific movements; trains the basal ganglia</td></tr>
+      </tbody></table></div>
+  </div>
+  <div class="grid2">
+    <div class="key"><h3><span class="t">Key · the hierarchy</span>Goal → sub-goal → muscle <span class="mine">your notes</span></h3>
+      <ol>
+        <li><b>aPFC</b>: why. "Lay out the idea I'm writing."</li>
+        <li><b>Premotor</b>: what sequence. "These words, this sentence."</li>
+        <li><b>Motor cortex</b>: which muscles. "Left index finger, down, now."</li>
+      </ol>
+      <details class="ex"><summary>Example · Typing these notes (from your notes)</summary><div><p>While typing, the aPFC holds the high-level goal of conceptually laying out what you are writing. The premotor cortex simulates the specific words and sentence. The motor cortex coordinates each keystroke. Practiced words like "the" are fired off by the basal ganglia without the premotor cortex spelling them out.</p></div></details>
+    </div>
+    <div class="key"><h3><span class="t">Key · imagination as a tool</span>Vicarious trial and error <span class="mine">your notes</span></h3>
+      <p>By driving simulations in sensory cortex, the frontal lobe can try actions in imagination, predict the outcomes, and only then commit. The same circuit can restrain behavior by holding back the motor cortex.</p>
+      <details class="ex"><summary>Example · A rat at a fork in a maze</summary><div><p>Rats pause at a junction and look left, then right, before choosing. During that pause, hippocampal place cells fire in sequences that sweep down each path ahead, as if the rat is mentally walking it. Damage the frontal cortex and the pausing, and the good choices, drop off.</p></div></details>
+    </div>
+  </div>
+
+  <div class="lab">
+    <div class="lab-head"><h3>From goal-directed to habit</h3><span class="mono">Interactive · practice slider</span></div>
+    <p class="how">Drag practice from zero to hundreds of repetitions. Watch control shift from the slow frontal route to the fast basal ganglia shortcut, and what you gain and lose along the way.</p>
+    <div class="controls"><label class="ctl" style="max-width:420px">Repetitions practiced <output id="hbRo"></output><input type="range" id="hbR" min="0" max="200" step="1" value="10"></label> <span class="stage" id="hbStage"></span></div>
+    <div class="grid2" style="align-items:center">
+      <svg id="hbSvg" viewBox="0 0 360 230" style="width:100%" role="img" aria-label="Control pathways for an action">
+        <defs><marker id="ah2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="context-stroke"/></marker></defs>
+        <path id="hbE1" d="M95,38 L150,38" stroke="var(--accent)" stroke-width="4" fill="none" marker-end="url(#ah2)"/>
+        <path id="hbE2" d="M215,38 L250,38 L250,92" stroke="var(--accent)" stroke-width="4" fill="none" marker-end="url(#ah2)"/>
+        <path id="hbE3" d="M120,178 C200,178 230,150 250,128" stroke="var(--signal)" stroke-width="4" fill="none" marker-end="url(#ah2)"/>
+        <path id="hbE4" d="M55,58 L55,158" stroke="var(--muted)" stroke-width="2" stroke-dasharray="5 4" fill="none" marker-end="url(#ah2)"/>
+        <path d="M290,110 L322,110" stroke="var(--ink)" stroke-width="2.5" fill="none" marker-end="url(#ah2)"/>
+        <g font-size="12">
+          <rect x="15" y="20" width="80" height="36" rx="8" fill="var(--surface-2)" stroke="var(--line)"/><text x="55" y="43" text-anchor="middle" fill="var(--ink)">aPFC</text>
+          <rect x="150" y="20" width="76" height="36" rx="8" fill="var(--surface-2)" stroke="var(--line)"/><text x="188" y="43" text-anchor="middle" fill="var(--ink)">Premotor</text>
+          <rect x="210" y="92" width="80" height="36" rx="8" fill="var(--surface-2)" stroke="var(--line)"/><text x="250" y="115" text-anchor="middle" fill="var(--ink)">Motor</text>
+          <rect x="10" y="160" width="110" height="36" rx="8" fill="var(--surface-2)" stroke="var(--line)"/><text x="65" y="183" text-anchor="middle" fill="var(--ink)">Basal ganglia</text>
+          <text x="340" y="114" text-anchor="middle" fill="var(--ink)">Act</text>
+          <text x="62" y="112" fill="var(--muted)" font-size="10">trains</text>
+        </g>
+      </svg>
+      <div class="meters" id="hbMeters"></div>
+    </div>
+    <p class="explain" id="hbE"></p>
+  </div>
+
+  <div class="grid2">
+    <div class="key"><h3><span class="t">Key · how habits form</span>The frontal lobe trains the basal ganglia <span class="mine">your notes</span></h3>
+      <p>aPFC, premotor and motor cortex repeatedly run a movement. Dopamine errors stamp it into the basal ganglia. Once fluent, the <b>back (dorsal) basal ganglia</b> activate motor cortex directly. That is model-free reinforcement: efficient, but blind to changes in the goal.</p>
+      <details class="ex"><summary>Example · Driving to your old address</summary><div><p>You moved last month, but after a distracted day you find yourself parked at the old apartment. The aPFC was busy elsewhere, so the basal ganglia ran the well-worn route.</p></div></details>
+    </div>
+    <div class="key"><h3><span class="t">Key · the brake</span>Inhibitory control <span class="added">added</span></h3>
+      <p>The prefrontal cortex can veto a habit before it reaches the muscles. It is slow and tires easily, which is why habits win when you are stressed, rushed or exhausted.</p>
+      <details class="ex"><summary>Example · The Stroop test</summary><div><p>Name the ink color of the word <b style="color:var(--inhib)">RED</b>. Reading is a habit, so the word fights the answer. The pause you feel is the prefrontal cortex overriding the basal ganglia.</p></div></details>
+    </div>
+  </div>
+  <div class="grid2">
+    <div class="det"><h3><span class="t">Detail</span>The cerebellum predicts movement <span class="added">added</span></h3>
+      <p>Before you move, the cerebellum predicts what the movement will feel like and corrects errors mid-motion. This is why you can't tickle yourself: the prediction cancels the sensation. Damage causes clumsy, overshooting movements.</p></div>
+    <div class="det"><h3><span class="t">Detail · hypothesis</span>Why the aPFC loses layer 4 <span class="mine">your notes</span></h3>
+      <p>At birth the aPFC has a layer 4, which receives basal ganglia input (via thalamus) that is likely emotional and reward-based. It atrophies in the first 6–12 months. One idea is that those months build an internal model, a sense of self, that the aPFC later acts on. Treat this as a hypothesis, not settled science.</p></div>
+  </div>
+  <details class="ex"><summary>Example <span class="k">frontal damage</span> · Phineas Gage</summary><div>
+    <p>In 1848 an iron rod passed through railroad foreman Phineas Gage's prefrontal cortex. He survived, could walk and talk, but became impulsive and unable to stick to plans. Movement was intact; the controller that chooses and restrains was damaged.</p></div></details>
+  <div class="check"><h4>Check yourself</h4>
+    <details><summary>Which structure triggers motor cortex for a well-learned movement?</summary><p>The basal ganglia, bypassing the aPFC and premotor planning.</p></details>
+    <details><summary>Why are habits hard to change when the goal changes?</summary><p>Model-free learning stores "this action was rewarded", not why. Updating needs new experience, while model-based control can adapt by simulating.</p></details>
+    <details><summary>What do the premotor and motor cortex each simulate?</summary><p>Premotor: mid-level sub-goals and sequences. Motor: the specific movement it will then execute.</p></details>
+  </div>
+  <button class="btn mastery" data-master="L8">Mark level 8 as understood</button>
+</section>
+
+<!-- ================= LEVEL 9 ================= -->
+<section class="level" id="L9" data-title="Memory &amp; navigation">
+  <div class="level-head">
+    <span class="lvl-num">09</span>
+    <h2>Memory &amp; navigation</h2>
+    <p class="q">How does today's experience become something you can recall and plan with?</p>
+    <div class="builds">Builds on: <a href="#L3">03 LTP</a> <a href="#L8">08 Simulation</a></div>
+  </div>
+  <div class="core"><span class="tag">Core</span>
+    <p>The <b>hippocampus</b> turns experiences into <b>long-term memories</b> and uses the same machinery to <b>map space</b>. The <b>entorhinal cortex</b> supplies a <b>general coordinate system</b> (grid and object-vector cells); the hippocampus binds it into <b>specific</b> places and landmarks.</p>
+  </div>
+  <div class="grid2">
+    <div class="key"><h3><span class="t">Key · kinds of memory</span>Not one system but several <span class="added">added</span></h3>
+      <ul>
+        <li><b>Declarative</b> (you can say it): <i>episodic</i> events and <i>semantic</i> facts. Hippocampus, then cortex.</li>
+        <li><b>Procedural</b> (skills): basal ganglia and cerebellum.</li>
+        <li><b>Emotional conditioning</b>: amygdala.</li>
+        <li><b>Working memory</b> (~4 items for seconds): prefrontal cortex.</li>
+      </ul></div>
+    <div class="key"><h3><span class="t">Key · consolidation</span>Hippocampus → cortex <span class="mine">your notes</span></h3>
+      <p>New memories depend on the hippocampus at first. Over weeks to years, much of the memory moves into the cortex. A lot of this happens during <b>sleep</b>, when the hippocampus replays the day's patterns.</p>
+      <details class="ex"><summary>Example · Patient H.M.</summary><div><p>In 1953 Henry Molaison had both hippocampi removed to stop seizures. Afterward he could not form new declarative memories, yet older memories survived and he could still learn new motor skills like mirror drawing, without remembering the practice. One case showed memory is not one system.</p></div></details>
+    </div>
+  </div>
+
+  <div class="lab">
+    <div class="lab-head"><h3>Cells that map space</h3><span class="mono">Interactive · move through the arena</span></div>
+    <p class="how">Each map shows where one cell fires as an animal explores. Move your pointer or finger over the arena to steer, or let it wander. Then press "Move the objects": cells tied to objects follow them, the grid cell does not.</p>
+    <div class="controls">
+      <div class="seg" role="group" aria-label="Cell type" id="gcSeg">
+        <button data-c="grid" aria-pressed="true">Grid cell</button>
+        <button data-c="ovc" aria-pressed="false">Object-vector cell</button>
+        <button data-c="place" aria-pressed="false">Place cell</button>
+        <button data-c="landmark" aria-pressed="false">Landmark cell</button>
+      </div>
+      <button class="btn" id="gcWander" aria-pressed="false">Wander</button>
+      <button class="btn" id="gcMove">Move the objects</button>
+    </div>
+    <div class="grid2" style="align-items:center">
+      <canvas id="gcC" style="max-width:340px;aspect-ratio:1;justify-self:center;touch-action:none" aria-label="Arena with firing map"></canvas>
+      <div class="info"><h4 id="gcT"></h4><p class="role" id="gcW"></p><p id="gcD"></p></div>
+    </div>
+  </div>
+  <div class="key"><h3><span class="t">Key · the four spatial cells</span>General vs. specific <span class="mine">your notes</span></h3>
+    <div class="tbl"><table>
+      <thead><tr><th>Cell</th><th>Where</th><th>Fires when</th><th>Code</th></tr></thead>
+      <tbody>
+        <tr><td><b>Grid cell</b> <span class="added">added</span></td><td>Entorhinal cortex</td><td>You stand on any vertex of a triangular grid tiling the room</td><td>General coordinates</td></tr>
+        <tr><td><b>Object-vector cell</b></td><td>Entorhinal cortex</td><td>Any object sits at a set distance and direction from you</td><td>General</td></tr>
+        <tr><td><b>Place cell</b> <span class="added">added</span></td><td>Hippocampus</td><td>You are in one specific spot</td><td>Specific</td></tr>
+        <tr><td><b>Landmark cell</b></td><td>Hippocampus</td><td>You are near one particular object only</td><td>Specific</td></tr>
+      </tbody></table></div>
+    <p>The 2014 Nobel Prize went to John O'Keefe (place cells) and May-Britt and Edvard Moser (grid cells).</p>
+  </div>
+  <details class="ex"><summary>Example <span class="k">using it to study</span> · The memory palace</summary><div>
+    <p>Memory champions picture a familiar building and "place" each item to remember in a room. It works because it piggybacks on the hippocampus's spatial map, which is built to remember where things are. Try it on the six cortical layers: one per floor of your home.</p></div></details>
+  <div class="check"><h4>Check yourself</h4>
+    <details><summary>Grid cell or place cell: which works in any room you enter?</summary><p>The grid cell. It provides a general coordinate frame. Place cells remap to new spots in each new environment.</p></details>
+    <details><summary>H.M. could learn mirror drawing but not remember practicing. Why?</summary><p>Procedural learning runs through the basal ganglia and cerebellum, which were intact. Remembering the practice session is episodic and needed the hippocampus.</p></details>
+  </div>
+  <button class="btn mastery" data-master="L9">Mark level 9 as understood</button>
+</section>
+
+<!-- ================= LEVEL 10 ================= -->
+<section class="level" id="L10" data-title="Language">
+  <div class="level-head">
+    <span class="lvl-num">10</span>
+    <h2>Language</h2>
+    <p class="q">How do hearing and movement combine into speech?</p>
+    <div class="builds">Builds on: <a href="#L4">04 Lobes</a> <a href="#L8">08 Motor hierarchy</a> <a href="#L6">06 Perception</a></div>
+  </div>
+  <div class="core"><span class="tag">Core</span>
+    <p>Language uses a <b>comprehension area in the temporal lobe (Wernicke's)</b> and a <b>production area at the back of the frontal lobe (Broca's)</b>, joined by a fiber bundle, the <b>arcuate fasciculus</b>. Comprehension is built on hearing; production is built on the motor hierarchy.</p>
+  </div>
+  <ol class="pipe" aria-label="Spoken language pathway">
+    <li><b>Ear → MGN</b><span>Thalamic relay for sound</span></li>
+    <li><b>Auditory cortex</b><span>Temporal lobe; pitch and phonemes</span></li>
+    <li class="hl"><b>Wernicke's</b><span>Meaning of words</span></li>
+    <li><b>Arcuate fasciculus</b><span>Carries words forward</span></li>
+    <li class="hl"><b>Broca's</b><span>Plans the sentence and its sounds</span></li>
+    <li><b>Motor cortex</b><span>Lips, tongue, larynx</span></li>
+  </ol>
+  <div class="grid2">
+    <div class="key"><h3><span class="t">Key · production</span>Broca's area <span class="mine">your notes</span></h3>
+      <p>Sits between the motor cortex and the prefrontal cortex, which matches its role: it is the "premotor cortex" for speech, turning ideas into word sequences.</p>
+      <details class="ex"><summary>Example · Broca's aphasia</summary><div><p>Speech is slow, effortful and telegraphic ("Walk... dog... park"), but comprehension is mostly fine. Paul Broca's famous 1861 patient could only say "tan". People with this aphasia know what they want to say and are frustrated they can't get it out.</p></div></details></div>
+    <div class="key"><h3><span class="t">Key · comprehension</span>Wernicke's area <span class="mine">your notes</span></h3>
+      <p>Sits in the temporal lobe beside auditory cortex, matching its role: it links sounds to meaning.</p>
+      <details class="ex"><summary>Example · Wernicke's aphasia</summary><div><p>Speech is fluent, with normal rhythm, but filled with wrong or invented words ("I called my mother on the television and she didn't understand the door"). Comprehension is poor and the person often doesn't notice anything is wrong.</p></div></details></div>
+  </div>
+  <div class="det"><h3><span class="t">Detail</span>Lateralization and reading <span class="added">added</span></h3>
+    <p>About 95% of right-handers (and most left-handers) have language in the left hemisphere. Reading adds a visual route: V1 → ventral stream ("visual word form area") → angular gyrus → Wernicke's. Damage to the arcuate fasciculus causes <i>conduction aphasia</i>: comprehension and fluent speech, but trouble repeating a phrase back.</p></div>
+  <div class="check"><h4>Check yourself</h4>
+    <details><summary>Fluent, meaningless speech with poor understanding: which area?</summary><p>Wernicke's area (temporal lobe).</p></details>
+    <details><summary>Why does Broca's location make sense given Level 8?</summary><p>It sits next to motor cortex and acts like a premotor area for speech, planning the sequence of mouth movements.</p></details>
+  </div>
+  <button class="btn mastery" data-master="L10">Mark level 10 as understood</button>
+</section>
+
+<!-- ================= LEVEL 11 ================= -->
+<section class="level" id="L11" data-title="Putting it together">
+  <div class="level-head">
+    <span class="lvl-num">11</span>
+    <h2>Putting it together</h2>
+    <p class="q">Can you follow one ordinary moment through every level?</p>
+    <div class="builds">Builds on: everything above</div>
+  </div>
+  <div class="core"><span class="tag">Core</span>
+    <p>Typing one sentence uses the <b>whole loop</b>: value sets a goal, the frontal lobe simulates and acts, perception checks the result, an <b>error</b> triggers learning, and memory stores it.</p>
+  </div>
+  <ol class="trace">
+    <li><span class="n">1</span><div><b>You decide to write a note.</b> The aPFC holds the goal, fed by the hippocampus (what you learned today) and the basal ganglia (the value of finishing). <span class="lv"><a href="#L8">L8</a> · <a href="#L9">L9</a> · <a href="#L7">L7</a></span></div></li>
+    <li><span class="n">2</span><div><b>You compose the sentence.</b> Broca's area and premotor cortex simulate the words before any finger moves. <span class="lv"><a href="#L10">L10</a> · <a href="#L8">L8</a></span></div></li>
+    <li><span class="n">3</span><div><b>Your fingers move.</b> Motor cortex fires, layer 5 neurons drive the spinal cord, and the cerebellum smooths timing. Common words run as basal ganglia habits. <span class="lv"><a href="#L8">L8</a> · <a href="#L5">L5</a></span></div></li>
+    <li><span class="n">4</span><div><b>Each keystroke is a chain of spikes.</b> Thousands of EPSPs sum to threshold in each motor neuron; acetylcholine contracts each muscle. <span class="lv"><a href="#L1">L1</a> · <a href="#L2">L2</a></span></div></li>
+    <li><span class="n">5</span><div><b>You see the screen.</b> Retina → LGN → V1 lines → V2 contours → V4 shapes → ventral stream recognizes letters and words. <span class="lv"><a href="#L6">L6</a></span></div></li>
+    <li><span class="n">6</span><div><b>You spot a typo.</b> Prediction ("the") and input ("teh") don't match. The cingulate flags the error. <span class="lv"><a href="#L7">L7</a> · <a href="#L0">L0</a></span></div></li>
+    <li><span class="n">7</span><div><b>You fix it and learn.</b> The prefrontal brake slows the habit, a correction is simulated and executed, and synapses that caused the slip are adjusted. <span class="lv"><a href="#L3">L3</a> · <a href="#L8">L8</a></span></div></li>
+    <li><span class="n">8</span><div><b>That night, you sleep.</b> The hippocampus replays the session and moves it toward long-term storage in cortex. <span class="lv"><a href="#L9">L9</a></span></div></li>
+  </ol>
+  <div class="key"><h3><span class="t">Key · cheat sheet</span>Every structure, one line each</h3>
+    <div class="tbl"><table>
+      <thead><tr><th>Structure</th><th>One-line job</th><th>Remember it by</th></tr></thead>
+      <tbody>
+        <tr><td><b>aPFC</b></td><td>Holds goals, controls simulations</td><td>Vicarious trial and error</td></tr>
+        <tr><td><b>Premotor / motor</b></td><td>Sub-goals / specific movements</td><td>Words vs. keystrokes</td></tr>
+        <tr><td><b>Basal ganglia</b></td><td>Model-free habits and reward pursuit</td><td>Autopilot to your old address</td></tr>
+        <tr><td><b>Cerebellum</b></td><td>Predicts and corrects movement</td><td>Can't tickle yourself</td></tr>
+        <tr><td><b>Thalamus</b></td><td>Sensory gateway and filter</td><td>LGN light, MGN music; not smell</td></tr>
+        <tr><td><b>Amygdala</b></td><td>Fear, aggression, emotional tagging</td><td>Stick or snake</td></tr>
+        <tr><td><b>Hypothalamus</b></td><td>Drives and body state</td><td>Hunger, thirst, temperature</td></tr>
+        <tr><td><b>Cingulate</b></td><td>Emotion, pain, error alarm</td><td>Spotting the typo</td></tr>
+        <tr><td><b>Hippocampus</b></td><td>New memories, specific places</td><td>H.M.; taxi drivers</td></tr>
+        <tr><td><b>Entorhinal cortex</b></td><td>General spatial coordinates</td><td>Grid cells</td></tr>
+        <tr><td><b>V1 → V4, MT</b></td><td>Lines → contours → shape, color, motion</td><td>Kanizsa triangle; L.M.</td></tr>
+        <tr><td><b>Broca / Wernicke</b></td><td>Speech production / comprehension</td><td>"Tan" vs. fluent nonsense</td></tr>
+      </tbody></table></div>
+  </div>
+  <button class="btn mastery" data-master="L11">Mark level 11 as understood</button>
+</section>
+
+<footer>Built from your Neuroscience Notes. Items marked <span class="added">added</span> fill gaps in the notes; notes boxes flag places where the current science differs. Your progress and the "Essentials only" setting are saved in this browser only.</footer>
+</main>
+</div>
+
+<script>
+(function(){
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const tok=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const redrawers=[];
+function onTheme(f){redrawers.push(f)}
+try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>redrawers.forEach(f=>f()));}catch(e){}
+new MutationObserver(()=>redrawers.forEach(f=>f())).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+let rz;addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(()=>redrawers.forEach(f=>f()),120)});
+function prep(c){const r=c.getBoundingClientRect(),d=devicePixelRatio||1,w=Math.max(10,r.width),h=Math.max(10,r.height);c.width=w*d;c.height=h*d;const x=c.getContext('2d');x.setTransform(d,0,0,d,0,0);return{x,w,h}}
+
+/* ---------- Ladder + mastery ---------- */
+const levels=$$('main .level');
+const ladder=$('#ladder');
+let mastered=store.get('neuro.mastered',{});
+levels.forEach((s,i)=>{const li=document.createElement('li');const a=document.createElement('a');a.href='#'+s.id;a.dataset.id=s.id;
+  a.innerHTML='<span class="dot">'+i+'</span><span class="nm"></span>';a.querySelector('.nm').textContent=s.dataset.title.replace('&amp;','&');a.title=a.querySelector('.nm').textContent;li.appendChild(a);ladder.appendChild(li)});
+function renderMastery(){
+  $$('#ladder a').forEach(a=>a.classList.toggle('done',!!mastered[a.dataset.id]));
+  $$('[data-master]').forEach(b=>{const on=!!mastered[b.dataset.master];b.setAttribute('aria-pressed',on);b.textContent=on?'✓ Understood · click to undo':'Mark level '+b.dataset.master.slice(1)+' as understood'});
+  const n=Object.values(mastered).filter(Boolean).length;$('#progressTxt').textContent=n+' of 11 levels understood';
+}
+$$('[data-master]').forEach(b=>b.addEventListener('click',()=>{mastered[b.dataset.master]=!mastered[b.dataset.master];store.set('neuro.mastered',mastered);renderMastery()}));
+renderMastery();
+const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){$$('#ladder a').forEach(a=>a.classList.toggle('here',a.dataset.id===e.target.id))}})},{rootMargin:'-40% 0px -55% 0px'});
+levels.forEach(s=>io.observe(s));
+const ess=$('#essentials');ess.checked=store.get('neuro.ess',false);document.body.classList.toggle('essentials',ess.checked);
+ess.addEventListener('change',()=>{document.body.classList.toggle('essentials',ess.checked);store.set('neuro.ess',ess.checked)});
+
+/* ---------- L1 Hodgkin-Huxley ---------- */
+(function(){
+  const A=$('#hhA'),W=$('#hhW'),G=$('#hhG'),C=$('#hhC');
+  const T=40,dt=0.01;
+  function sim(){
+    const amp=+A.value,wid=+W.value,gap=+G.value;
+    let V=-65,m=0.0529,h=0.5961,n=0.3177;const out=[];let spikes=0,above=false,peak=-100;
+    for(let i=0;i*dt<=T;i++){
+      const t=i*dt;let I=0;
+      if(t>=5&&t<5+wid)I=amp;
+      if(gap>0&&t>=5+gap&&t<5+gap+wid)I=amp;
+      const vn=V+55,vm=V+40;
+      const an=Math.abs(vn)<1e-6?0.1:0.01*vn/(1-Math.exp(-vn/10)),bn=0.125*Math.exp(-(V+65)/80);
+      const am=Math.abs(vm)<1e-6?1:0.1*vm/(1-Math.exp(-vm/10)),bm=4*Math.exp(-(V+65)/18);
+      const ah=0.07*Math.exp(-(V+65)/20),bh=1/(1+Math.exp(-(V+35)/10));
+      const gNa=120*m*m*m*h,gK=36*n*n*n*n;
+      const dV=I-gNa*(V-50)-gK*(V+77)-0.3*(V+54.387);
+      V+=dt*dV;m+=dt*(am*(1-m)-bm*m);h+=dt*(ah*(1-h)-bh*h);n+=dt*(an*(1-n)-bn*n);
+      if(V>0&&!above){spikes++;above=true}if(V<-30)above=false;peak=Math.max(peak,V);
+      if(i%5===0)out.push({t,V,gNa,gK,I});
+    }
+    return{out,spikes,peak,amp,wid,gap};
+  }
+  function draw(){
+    $('#hhAo').textContent=(+A.value).toFixed(1)+' µA/cm²';$('#hhWo').textContent=(+W.value).toFixed(1)+' ms';$('#hhGo').textContent=+G.value===0?'off':(+G.value).toFixed(1)+' ms';
+    const r=sim();const{x,w,h}=prep(C);
+    const pl=46,pr=12,pt=12,vb=h*0.66,gb=h-22;
+    const X=t=>pl+(t/T)*(w-pl-pr),Y=v=>pt+(50-v)/(130)*(vb-pt),YG=g=>vb+14+(1-g/40)*(gb-vb-14);
+    const ink=tok('--ink'),mut=tok('--muted'),line=tok('--line');
+    x.clearRect(0,0,w,h);x.fillStyle=tok('--stain');r.out.forEach(p=>{if(p.I>0){x.fillRect(X(p.t),pt,(w-pl-pr)*0.05/T+1,vb-pt)}});x.font='11px "IBM Plex Mono", monospace';x.fillStyle=mut;x.strokeStyle=line;x.lineWidth=1;
+    [40,0,-40,-80].forEach(v=>{x.beginPath();x.moveTo(pl,Y(v));x.lineTo(w-pr,Y(v));x.stroke();x.fillText(v+' mV',2,Y(v)+4)});
+    for(let t=0;t<=T;t+=10){x.fillText(t+' ms',X(t)-12,h-6)}
+    x.setLineDash([5,4]);x.strokeStyle=mut;x.beginPath();x.moveTo(pl,Y(-55));x.lineTo(w-pr,Y(-55));x.stroke();x.setLineDash([]);
+    x.fillText('≈ threshold',w-pr-80,Y(-55)-4);
+    // stimulus marks
+    const path=(fn,col,lw)=>{x.strokeStyle=col;x.lineWidth=lw;x.beginPath();r.out.forEach((p,i)=>{const yy=fn(p);i?x.lineTo(X(p.t),yy):x.moveTo(X(p.t),yy)});x.stroke()};
+    path(p=>YG(p.gNa),tok('--excite'),1.6);path(p=>YG(p.gK),tok('--inhib'),1.6);
+    path(p=>Y(p.V),tok('--signal'),2.4);
+    x.fillStyle=mut;x.fillText('conductance',2,vb+24);
+    $('#hhN').textContent=r.spikes;$('#hhP').textContent=r.peak.toFixed(0)+' mV';
+    let msg;
+    if(r.spikes===0)msg=r.amp*r.wid<3?'Too weak: the voltage bumps up and decays back. Threshold was never reached, so no spike. Raise strength or length.':'Still below threshold. The membrane leaks charge away faster than this pulse adds it.';
+    else if(r.gap>0&&r.spikes===1)msg='One spike only. The second pulse landed in the refractory period: Na⁺ channels were still inactivated and K⁺ channels still open. Widen the gap to get a second spike.';
+    else if(r.spikes>=2)msg='Two spikes. Notice the second one may be slightly smaller if the gap is short: the relative refractory period. Shrink the gap to find where it fails.';
+    else msg='A full spike. The red Na⁺ trace opens first and fast (rising phase); the blue K⁺ trace opens later and slower (falling phase and undershoot). Try a stronger pulse: the spike does not get bigger.';
+    $('#hhE').textContent=msg;
+  }
+  [A,W,G].forEach(e=>e.addEventListener('input',draw));draw();onTheme(draw);
+})();
+
+/* ---------- L2 Leaky integrate-and-fire ---------- */
+(function(){
+  const C=$('#lifC');const N=360;let buf=new Array(N).fill(-70);let V=-70,refr=0,spikes=0,steady=false,queue=[],running=false,lastInput=0,idle=0;
+  const tau=18,Vr=-70,th=-55;
+  function step(){
+    for(let k=0;k<2;k++){
+      let out;
+      if(refr>0){refr--;V=-75+ (5*(1-refr/6));out=V}
+      else{
+        V+=(Vr-V)/tau+(steady?0.75:0);
+        if(queue.length&&queue[0]<=0){queue.shift();V+=7}
+        queue=queue.map(q=>q-1);
+        if(V>=th){spikes++;out=35;V=-75;refr=6}else out=V;
+      }
+      buf.push(out);buf.shift();
+    }
+  }
+  function draw(){
+    const{x,w,h}=prep(C);const Y=v=>10+(40-v)/(40+85)*(h-20),X=i=>i/(N-1)*w;
+    x.clearRect(0,0,w,h);x.strokeStyle=tok('--line');x.lineWidth=1;
+    [-70].forEach(v=>{x.beginPath();x.moveTo(0,Y(v));x.lineTo(w,Y(v));x.stroke()});
+    x.setLineDash([5,4]);x.strokeStyle=tok('--muted');x.beginPath();x.moveTo(0,Y(th));x.lineTo(w,Y(th));x.stroke();x.setLineDash([]);
+    x.font='11px "IBM Plex Mono", monospace';x.fillStyle=tok('--muted');x.fillText('−55 threshold',6,Y(th)-4);x.fillText('−70 rest',6,Y(-70)+14);
+    x.strokeStyle=tok('--signal');x.lineWidth=2;x.beginPath();buf.forEach((v,i)=>i?x.lineTo(X(i),Y(v)):x.moveTo(0,Y(v)));x.stroke();
+    $('#lifV').textContent=Math.round(buf[N-1]).toString().replace('-','−')+' mV';$('#lifN').textContent=spikes;
+  }
+  function loop(){step();draw();idle++;if(steady||queue.length||Math.abs(V-Vr)>0.05||refr>0||idle<N/2){requestAnimationFrame(loop)}else running=false}
+  function kick(){idle=0;if(!running){running=true;requestAnimationFrame(loop)}}
+  $('#lifE').onclick=()=>{V+=7;kick()};
+  $('#lifI').onclick=()=>{V-=7;kick()};
+  $('#lifB').onclick=()=>{V+=7;queue.push(3,6);kick()};
+  $('#lifS').onclick=e=>{steady=!steady;e.currentTarget.setAttribute('aria-pressed',steady);e.currentTarget.textContent=steady?'Steady background input: on':'Steady background input';kick()};
+  // seed a visible example: one EPSP, then a burst that fires
+  (function seed(){const plan={20:7,120:7,123:7,126:7};for(let i=0;i<N/2;i++){if(plan[i]){V+=plan[i]}step()}})();
+  draw();onTheme(draw);
+})();
+
+/* ---------- L4 Brain map ---------- */
+(function(){
+  const R={
+    frontal:{n:'Frontal lobe',c:'--accent',role:'Planning; controls which simulations run',d:'If sensory cortex simulates your surroundings, the frontal lobe chooses what and when to simulate. Contains the prefrontal cortex (aPFC, gPFC), premotor and motor cortex, and Broca\'s area.',lv:'L8'},
+    parietal:{n:'Parietal lobe',c:'--good',role:'Touch, temperature, pain, spatial awareness',d:'Holds the somatosensory strip (the touch map of the body) and is the destination of the dorsal "where/how" visual stream.',lv:'L6'},
+    temporal:{n:'Temporal lobe',c:'--inhib',role:'Hearing, language comprehension, recognizing objects',d:'Auditory cortex receives sound via the MGN. Wernicke\'s area links sounds to meaning. The ventral "what" stream ends here, and the hippocampus and amygdala sit inside.',lv:'L10'},
+    occipital:{n:'Occipital lobe',c:'--signal',role:'Visual processing',d:'V1 detects lines, V2 contours and patterns, V3 shape and motion, V4 color and complex shape.',lv:'L6'},
+    cerebellum:{n:'Cerebellum',c:'--muted',role:'Timing, coordination, movement prediction',d:'About 80% of the brain\'s neurons. Predicts the sensory result of each movement and corrects errors in real time.',lv:'L8'},
+    brainstem:{n:'Brainstem',c:'--muted',role:'Breathing, heart rate, wakefulness',d:'Midbrain, pons and medulla. Home of the dopamine neurons (VTA and substantia nigra) and the serotonin and norepinephrine sources.',lv:'L7'},
+    motor:{n:'Motor cortex',area:1,role:'Simulates then executes specific movements',d:'A strip just in front of the central groove, mapped like a body (the motor homunculus). Also trains the basal ganglia on a movement.',lv:'L8'},
+    somato:{n:'Somatosensory cortex',area:1,role:'Touch map of the body',d:'A strip just behind the central groove in the parietal lobe. Receives touch, pain and temperature from the VP nucleus of the thalamus.',lv:'L4'},
+    broca:{n:'Broca\'s area',area:1,role:'Speech production',d:'Between the motor cortex and the prefrontal cortex. Plans word sequences like a premotor area for speech.',lv:'L10'},
+    wernicke:{n:'Wernicke\'s area',area:1,role:'Language comprehension',d:'In the temporal lobe beside auditory cortex. Links word sounds to meaning.',lv:'L10'},
+    v1:{n:'Primary visual cortex (V1)',area:1,role:'Lines and edges',d:'Receives the LGN\'s input in layer 4. Simple cells line up spot detectors to find lines at one angle.',lv:'L6'},
+    pfc:{n:'Prefrontal cortex',area:1,role:'Goals, simulation, self-control',d:'Includes the agranular PFC (no layer 4; takes amygdala, hippocampus and basal ganglia input to track goals) and the granular PFC.',lv:'L8'},
+    thalamus:{n:'Thalamus',deep:1,role:'Sensory gateway and filter',d:'Relays every sense except smell to cortex: LGN for vision, MGN for hearing, VP for touch, pain and temperature. Layer 6 of cortex adjusts its gain.',lv:'L5'},
+    hypothalamus:{n:'Hypothalamus',deep:1,role:'Drives and body state',d:'Hunger, thirst, temperature, sleep and hormones via the pituitary. Produces the bodily side of emotion.',lv:'L7'},
+    amygdala:{n:'Amygdala',deep:1,role:'Fear, aggression, emotional tagging',d:'Fast threat detection via a thalamus shortcut; marks memories as important.',lv:'L7'},
+    hippocampus:{n:'Hippocampus',deep:1,role:'New long-term memories; specific places',d:'Converts short-term memories to long-term. Holds place cells and landmark cells that respond to specific objects.',lv:'L9'},
+    entorhinal:{n:'Entorhinal cortex',deep:1,role:'General spatial coordinates',d:'Main gateway into the hippocampus. Grid cells and object-vector cells that respond to any object build a general coordinate system.',lv:'L9'},
+    cingulate:{n:'Cingulate gyrus',deep:1,role:'Emotion, pain, error alarm',d:'Runs along the inner surface above the corpus callosum. Regulates emotion and pain and helps predict negative outcomes.',lv:'L7'},
+    bg:{n:'Basal ganglia',deep:1,role:'Model-free goals and execution',d:'Front (ventral) part drives automatic reward pursuit; back (dorsal) part executes automatic movement. Trained by the frontal cortex and by dopamine.',lv:'L8'}
+  };
+  const svg=$('#brainSvg'),info=$('#brainInfo');
+  function colorLobes(){$$('#brainSvg .lobe').forEach(p=>{const r=R[p.dataset.r];p.style.fill=tok(r.c);p.style.fillOpacity=p.dataset.r==='cerebellum'||p.dataset.r==='brainstem'?.35:.3});
+    $$('#brainSvg .area').forEach(p=>{p.style.fill=tok('--accent');p.style.fillOpacity=.55})}
+  function sel(id){
+    $$('#brainSvg [data-r]').forEach(p=>p.classList.toggle('sel',p.dataset.r===id));
+    $$('#ghosts .ghost').forEach(g=>g.toggleAttribute('hidden',!(g.dataset.r===id||showAll)));
+    $$('.chip').forEach(c=>c.setAttribute('aria-pressed',c.dataset.r===id));
+    const r=R[id];info.innerHTML='';
+    const h=document.createElement('h4');h.textContent=r.n;const ro=document.createElement('p');ro.className='role';ro.textContent=r.role;const p=document.createElement('p');p.textContent=r.d;
+    const a=document.createElement('a');a.href='#'+r.lv;a.className='mono';a.textContent='Go deeper in Level '+r.lv.slice(1)+' →';
+    info.append(h,ro,p,a);
+  }
+  let showAll=false;
+  const lc=$('#lobeChips'),dc=$('#deepChips');
+  Object.entries(R).forEach(([k,r])=>{const b=document.createElement('button');b.className='chip'+(r.deep?' deep':'');b.dataset.r=k;b.textContent=r.n.replace(' lobe','').replace(' (V1)','');b.onclick=()=>sel(k);(r.deep?dc:lc).appendChild(b)});
+  svg.addEventListener('click',e=>{const t=e.target.closest('[data-r]');if(t)sel(t.dataset.r)});
+  colorLobes();sel('frontal');onTheme(colorLobes);
+})();
+
+/* ---------- L5 Cortical layers ---------- */
+(function(){
+  const L=[{id:'1',y:22,h:42,name:'Layer 1',sub:'feedback lands'},{id:'23',y:64,h:84,name:'Layer 2/3',sub:'combines features'},{id:'4',y:148,h:42,name:'Layer 4',sub:'thalamic input'},{id:'5',y:190,h:84,name:'Layer 5',sub:'main output'},{id:'6',y:274,h:62,name:'Layer 6',sub:'gain control'}];
+  const g=$('#bands');
+  const desc={'1':'Layer 1 has few cell bodies. Feedback from higher cortex arrives here and lands on the dendrite tips of L2/3 and L5 neurons, so predictions from above can shape what the column reports.',
+    '23':'Layer 2/3 gets input from layer 4, combines features across neighboring columns, and sends output to other cortical areas and down to layer 5.',
+    '4':'Layer 4 is the front door. The thalamus sends sensory data here, and layer 4 projects up to layer 2/3. Agranular cortex (motor, aPFC) lacks it.',
+    '5':'Layer 5 takes input from layer 2/3 and feedback through its dendrites in layer 1. It is the main output to the basal ganglia, brainstem and spinal cord, and also feeds layer 6.',
+    '6':'Layer 6 gets input from the thalamus and layer 5, and sends output back to the thalamus to turn its gain up or down.'};
+  const conn={'1':['fb-1','1-5'],'23':['4-23','23-ctx','23-5'],'4':['th-4','4-23'],'5':['23-5','5-bg','5-6','1-5'],'6':['5-6','6-th','th-6']};
+  L.forEach(l=>{const r=document.createElementNS('http://www.w3.org/2000/svg','rect');r.setAttribute('x',140);r.setAttribute('y',l.y);r.setAttribute('width',300);r.setAttribute('height',l.h);r.setAttribute('class','band');r.dataset.l=l.id;g.appendChild(r);
+    const t=document.createElementNS('http://www.w3.org/2000/svg','text');t.setAttribute('x',130);t.setAttribute('y',l.y+l.h/2-2);t.setAttribute('text-anchor','end');t.setAttribute('class','ltxt');t.textContent=l.name;g.appendChild(t);
+    const s=document.createElementNS('http://www.w3.org/2000/svg','text');s.setAttribute('x',130);s.setAttribute('y',l.y+l.h/2+13);s.setAttribute('text-anchor','end');s.setAttribute('class','lsub');s.textContent=l.sub;g.appendChild(s);});
+  function shade(){$$('#bands .band').forEach((r,i)=>{r.style.fill=tok(i%2?'--stain':'--surface-2')})}
+  shade();onTheme(shade);
+  function light(arrows,layer){$$('#layerSvg .arrow').forEach(a=>a.classList.toggle('on',arrows.includes(a.dataset.a)));$$('#bands .band').forEach(b=>b.classList.toggle('on',b.dataset.l===layer))}
+  $('#bands').addEventListener('click',e=>{const b=e.target.closest('.band');if(!b)return;step=0;$('#trBtn').textContent='Trace a signal, step 1';light(conn[b.dataset.l],b.dataset.l);$('#layerE').textContent=desc[b.dataset.l]});
+  const steps=[['th-4','4','1 of 6 · Sensory data leaves the thalamus and enters layer 4.'],['4-23','23','2 of 6 · Layer 4 passes it up to layer 2/3, which combines features with neighboring columns.'],['23-ctx','23','3 of 6 · Layer 2/3 reports the result to other cortical areas.'],['23-5','5','4 of 6 · Layer 2/3 also sends it down to layer 5, which mixes in feedback from layer 1.'],['5-bg','5','5 of 6 · Layer 5 drives the basal ganglia, brainstem and spinal cord. This is how cortex causes action.'],['6-th','6','6 of 6 · Layer 5 feeds layer 6, which loops back to the thalamus and adjusts how much it lets through.']];
+  let step=0;
+  $('#trBtn').onclick=()=>{const s=steps[step];const arr=[s[0]];if(step===5)arr.push('5-6');light(arr,s[1]);$('#layerE').textContent=s[2];step=(step+1)%steps.length;$('#trBtn').textContent=step===0?'Start the trace again':'Next step ('+(step+1)+' of 6)'};
+  $('#trReset').onclick=()=>{step=0;light([],null);$('#trBtn').textContent='Trace a signal, step 1';$('#layerE').textContent='Click a layer, or press "Trace a signal".'};
+})();
+
+/* ---------- L6 Receptive field ---------- */
+(function(){
+  const S=$('#rfS'),C=$('#rfC');let on=true;const r1=30,r2=75; // svg units; slider maps to radius
+  function resp(s,isOn){const ca=Math.min(s,r1)**2/(r1*r1);const sa=Math.max(0,Math.min(s,r2)**2-r1*r1)/(r2*r2-r1*r1);const v=isOn?20+70*ca-75*sa*ca**0.3:20-20*ca+60*sa;return Math.max(0,v)}
+  function rad(){return +S.value*1.25}
+  function draw(){
+    const s=rad();$('#rfSo').textContent=(+S.value)+' (center fills at 24)';
+    $('#rfSpot').setAttribute('r',Math.max(0.01,s));
+    $('#rfCen').setAttribute('stroke',tok(on?'--excite':'--inhib'));$('#rfSur').setAttribute('stroke',tok(on?'--inhib':'--excite'));
+    $('#rfCl').textContent=on?'+ center':'− center';$('#rfSl').textContent=on?'− surround':'+ surround';
+    const v=resp(s,on);$('#rfR').textContent=v.toFixed(0)+' spikes/s';
+    const{x,w,h}=prep(C);const pl=40,pb=24,X=q=>pl+q/75*(w-pl-10),Y=q=>10+(1-q/100)*(h-10-pb);
+    x.clearRect(0,0,w,h);x.font='11px "IBM Plex Mono", monospace';x.fillStyle=tok('--muted');x.strokeStyle=tok('--line');
+    [0,50,100].forEach(q=>{x.beginPath();x.moveTo(pl,Y(q));x.lineTo(w-10,Y(q));x.stroke();x.fillText(q,8,Y(q)+4)});
+    x.fillText('spot size →',w-90,h-6);x.fillText('spikes/s',pl+4,20);
+    x.setLineDash([4,4]);x.beginPath();x.moveTo(pl,Y(20));x.lineTo(w-10,Y(20));x.stroke();x.setLineDash([]);
+    x.strokeStyle=tok('--accent');x.lineWidth=2;x.beginPath();for(let q=0;q<=75;q+=0.5){const yy=Y(resp(q,on));q?x.lineTo(X(q),yy):x.moveTo(X(q),yy)}x.stroke();
+    x.fillStyle=tok('--signal');x.beginPath();x.arc(X(s),Y(v),6,0,7);x.fill();
+  }
+  S.addEventListener('input',draw);
+  $('#rfOn').onclick=()=>{on=true;$('#rfOn').setAttribute('aria-pressed','true');$('#rfOff').setAttribute('aria-pressed','false');draw()};
+  $('#rfOff').onclick=()=>{on=false;$('#rfOff').setAttribute('aria-pressed','true');$('#rfOn').setAttribute('aria-pressed','false');draw()};
+  draw();onTheme(draw);
+})();
+
+/* ---------- L6 Orientation tuning ---------- */
+(function(){
+  const A=$('#orA'),tune=$('#tune'),btn=$('#orInh');let inh=true;const prefs=[0,22.5,45,67.5,90,112.5,135,157.5];
+  prefs.forEach(p=>{const c=document.createElement('div');c.className='col';c.innerHTML='<div class="bar"></div><svg class="ang" viewBox="0 0 22 22"><line x1="3" y1="11" x2="19" y2="11" stroke="currentColor" stroke-width="2.5" transform="rotate('+(-p)+' 11 11)"/></svg><span class="val"></span>';c.style.color='var(--ink)';tune.appendChild(c)});
+  function draw(){
+    const a=+A.value;$('#orAo').textContent=a+'°';$('#orBar').setAttribute('transform','rotate('+(-a)+' 100 100)');
+    let raw=prefs.map(p=>{let d=Math.abs(a-p)%180;d=Math.min(d,180-d);return Math.exp(-(d*d)/(2*22*22))});
+    let r=raw;if(inh){const m=raw.reduce((s,v)=>s+v,0)/raw.length;r=raw.map(v=>Math.max(0,v-0.9*m)*1.6)}
+    const mx=Math.max(1,...r);
+    const cols=[...tune.children];r.forEach((v,i)=>{const b=cols[i].querySelector('.bar');b.style.height=(v/mx*100)+'%';b.style.opacity=.35+.65*(v/mx);cols[i].querySelector('.val').textContent=Math.round(v*60)});
+    const best=r.indexOf(Math.max(...r));const bp=prefs[best];
+    const g=$('#orLgn');g.innerHTML='';
+    for(let k=-2;k<=2;k++){const rad=-bp*Math.PI/180;const cx=100+k*30*Math.cos(rad),cy=100+k*30*Math.sin(rad);
+      g.insertAdjacentHTML('beforeend','<circle cx="'+cx.toFixed(1)+'" cy="'+cy.toFixed(1)+'" r="13" fill="none" stroke="var(--inhib)" stroke-dasharray="3 3"/><circle cx="'+cx.toFixed(1)+'" cy="'+cy.toFixed(1)+'" r="5" fill="var(--excite)"/>')}
+    const active=r.filter(v=>v>0.15*mx).length;
+    $('#orE').textContent='The cell tuned to '+bp+'° wins. The dashed circles show the 5 LGN spot detectors it listens to, lined up at its angle. '+(inh?'With inhibition on, only '+active+' of 8 cells respond, so the angle is read precisely.':'Without inhibition, '+active+' of 8 cells respond, so the answer is blurrier. This is why the "excite this angle, inhibit others" step matters.');
+  }
+  A.addEventListener('input',draw);btn.onclick=()=>{inh=!inh;btn.setAttribute('aria-pressed',inh);btn.textContent='Lateral inhibition: '+(inh?'on':'off');draw()};draw();
+})();
+
+/* ---------- L7 TD dopamine ---------- */
+(function(){
+  let V=0,hist=[],omit=false,last=null;const alpha=0.22;
+  function trial(){const r=omit?0:1;const dc=V,dr=r-V;V+=alpha*dr;last={dc,dr,omit};hist.push({dc,dr});if(omit){omit=false;$('#tdOmit').setAttribute('aria-pressed','false')}}
+  function draw(){
+    const C=$('#tdC');let{x,w,h}=prep(C);const mid=h*0.55,sc=h*0.42;
+    x.clearRect(0,0,w,h);x.font='11px "IBM Plex Mono", monospace';x.fillStyle=tok('--muted');x.strokeStyle=tok('--line');x.lineWidth=1;
+    x.beginPath();x.moveTo(0,mid);x.lineTo(w,mid);x.stroke();
+    const tc=w*0.28,tr=w*0.72;
+    x.fillStyle=tok('--stain');x.fillRect(tc-14,6,28,h-30);x.fillRect(tr-14,6,28,h-30);
+    x.fillStyle=tok('--muted');x.fillText('light',tc-14,h-8);x.fillText(last&&last.omit?'no juice':'juice',tr-20,h-8);
+    const dc=last?last.dc:0,dr=last?last.dr:1;
+    x.strokeStyle=tok('--signal');x.lineWidth=2.2;x.beginPath();
+    for(let i=0;i<=200;i++){const px=i/200*w;let y=0;y+=dc*Math.exp(-((px-tc)**2)/(2*9*9));y+=dr*Math.exp(-((px-tr)**2)/(2*9*9));const yy=mid-y*sc;i?x.lineTo(px,yy):x.moveTo(px,yy)}x.stroke();
+    const H=$('#tdH');({x,w,h}=prep(H));x.clearRect(0,0,w,h);x.font='11px "IBM Plex Mono", monospace';
+    const pl=28,n=Math.max(20,hist.length),X=i=>pl+i/(n-1)*(w-pl-8),Y=v=>8+(1-(v+1)/2)*(h-28);
+    x.strokeStyle=tok('--line');x.fillStyle=tok('--muted');[1,0,-1].forEach(v=>{x.beginPath();x.moveTo(pl,Y(v));x.lineTo(w-8,Y(v));x.stroke();x.fillText(v>0?'+1':v<0?'−1':'0',2,Y(v)+4)});
+    x.fillText('trial →',w-60,h-6);
+    const line=(k,c)=>{if(!hist.length)return;x.strokeStyle=c;x.lineWidth=2;x.beginPath();hist.forEach((p,i)=>{i?x.lineTo(X(i),Y(p[k])):x.moveTo(X(i),Y(p[k]))});x.stroke();x.fillStyle=c;hist.forEach((p,i)=>{x.beginPath();x.arc(X(i),Y(p[k]),2.5,0,7);x.fill()})};
+    line('dc',tok('--accent'));line('dr',tok('--signal'));
+    $('#tdN').textContent=hist.length;$('#tdV').textContent=V.toFixed(2);
+    let m;
+    if(!last)m='Trial 0: the juice is a total surprise, so dopamine bursts at the juice and nothing happens at the light. Press "Run 1 trial".';
+    else if(last.omit)m='The expected juice never came. Dopamine dipped below baseline right when the juice should have arrived: "worse than expected." The light\'s value drops a little.';
+    else if(V<0.4)m='Early learning: the burst is still mostly at the juice, but the light is starting to predict it and gaining a small burst of its own.';
+    else if(V<0.9)m='Halfway: the burst is shifting from the juice to the light. The juice is becoming expected, so it surprises less.';
+    else m='Learned: dopamine now bursts at the light (the earliest predictor) and barely responds to the juice. Try skipping the reward.';
+    $('#tdE').textContent=m;
+  }
+  $('#tdOne').onclick=()=>{trial();draw()};$('#tdFive').onclick=()=>{for(let i=0;i<5;i++)trial();draw()};
+  $('#tdOmit').onclick=e=>{omit=!omit;e.currentTarget.setAttribute('aria-pressed',omit)};
+  $('#tdReset').onclick=()=>{V=0;hist=[];last=null;omit=false;$('#tdOmit').setAttribute('aria-pressed','false');draw()};
+  draw();onTheme(draw);
+})();
+
+/* ---------- L8 Habit ---------- */
+(function(){
+  const R=$('#hbR');const M=$('#hbMeters');
+  const defs=[['Conscious effort',w=>1-w*0.85],['Speed',w=>0.2+0.8*w],['Flexibility',w=>1-w*0.75],['Frees up the aPFC',w=>w*0.9]];
+  defs.forEach(d=>{M.insertAdjacentHTML('beforeend','<div class="meter"><span>'+d[0]+'</span><div class="trk"><div class="fil"></div></div><span class="v"></span></div>')});
+  function draw(){
+    const r=+R.value,w=1/(1+Math.exp(-(r-70)/16));$('#hbRo').textContent=r+' reps';
+    $('#hbE1').style.opacity=$('#hbE2').style.opacity=(1-w*0.85).toFixed(2);$('#hbE3').style.opacity=(0.12+0.88*w).toFixed(2);$('#hbE4').style.opacity=(w<0.95?0.8:0.25);
+    $$('#hbMeters .meter').forEach((m,i)=>{const v=defs[i][1](w);m.querySelector('.fil').style.width=(v*100)+'%';m.querySelector('.v').textContent=Math.round(v*100)+'%'});
+    const st=w<0.25?'Goal-directed (model-based)':w<0.75?'Handing over':'Habit (model-free)';$('#hbStage').textContent=st;
+    $('#hbE').textContent=w<0.25?'Every step is planned: aPFC → premotor → motor. Slow and tiring, but you can change course instantly. Meanwhile the dashed line shows the frontal cortex training the basal ganglia.':w<0.75?'The basal ganglia have learned part of the sequence and start triggering motor cortex directly. Errors still pull the aPFC back in.':'The basal ganglia fire motor cortex on cue. Fast and effortless, and your aPFC is free for other things, but if the goal changes the habit keeps running.';
+  }
+  R.addEventListener('input',draw);draw();
+})();
+
+/* ---------- L9 Spatial cells ---------- */
+(function(){
+  const C=$('#gcC');const G=60;let occ,spk;let type='grid';let pos={x:.5,y:.5},hd=0,target=null,wander=false,trail=[];
+  let objs=[{x:.3,y:.62},{x:.72,y:.28}];
+  const info={
+    grid:['Grid cell','Entorhinal cortex · general','Fires at every vertex of a triangular lattice that tiles the whole arena. Moving the objects changes nothing: it is a coordinate system, not a memory of things.'],
+    ovc:['Object-vector cell','Entorhinal cortex · general','Fires when any object is a set distance to the east of you, here about a fifth of the arena. Two objects, two firing fields. Move the objects and the fields move with them.'],
+    place:['Place cell','Hippocampus · specific','Fires in one spot only. It ignores the objects. In a new room it would remap to a different spot.'],
+    landmark:['Landmark cell','Hippocampus · specific','Fires only near the round object, not the square one. It encodes a particular thing, not objects in general.']};
+  function rate(px,py){
+    if(type==='grid'){const lam=.26,k=4*Math.PI/(Math.sqrt(3)*lam);let s=0;for(let i=0;i<3;i++){const a=i*Math.PI/3+0.2;s+=Math.cos(k*((px-.13)*Math.cos(a)+(py-.21)*Math.sin(a)))}return Math.max(0,(s+1.5)/4.5)**3}
+    if(type==='place'){const dx=px-.62,dy=py-.7;return Math.exp(-(dx*dx+dy*dy)/(2*.06*.06))}
+    if(type==='ovc'){let s=0;objs.forEach(o=>{const dx=px-(o.x-.2),dy=py-o.y;s+=Math.exp(-(dx*dx+dy*dy)/(2*.045*.045))});return Math.min(1,s)}
+    if(type==='landmark'){const o=objs[0],dx=px-o.x,dy=py-o.y;const d=Math.sqrt(dx*dx+dy*dy);return Math.exp(-((d-.07)**2)/(2*.035*.035))}
+  }
+  function reset(){occ=new Float32Array(G*G);spk=new Float32Array(G*G);trail=[]}
+  function visit(){const gx=Math.min(G-1,Math.floor(pos.x*G)),gy=Math.min(G-1,Math.floor(pos.y*G));occ[gy*G+gx]+=1;spk[gy*G+gx]+=rate(pos.x,pos.y);trail.push({x:pos.x,y:pos.y});if(trail.length>160)trail.shift()}
+  function move(){
+    if(target){const dx=target.x-pos.x,dy=target.y-pos.y,d=Math.hypot(dx,dy);if(d>.004){hd=Math.atan2(dy,dx);pos.x+=Math.cos(hd)*Math.min(.012,d);pos.y+=Math.sin(hd)*Math.min(.012,d)}}
+    else{hd+=(Math.random()-.5)*.6;pos.x+=Math.cos(hd)*.012;pos.y+=Math.sin(hd)*.012;if(pos.x<.02||pos.x>.98){hd=Math.PI-hd;pos.x=Math.min(.98,Math.max(.02,pos.x))}if(pos.y<.02||pos.y>.98){hd=-hd;pos.y=Math.min(.98,Math.max(.02,pos.y))}}
+    visit();
+  }
+  function seed(){reset();const p0={...pos};const t0=target;target=null;for(let i=0;i<14000;i++)move();target=t0;pos=p0}
+  function draw(){
+    const{x,w,h}=prep(C);const cell=w/G;x.clearRect(0,0,w,h);
+    const acc=tok('--accent');x.fillStyle=acc;
+    let mx=0;for(let i=0;i<G*G;i++){if(occ[i]>0)mx=Math.max(mx,spk[i]/occ[i])}
+    for(let i=0;i<G*G;i++){if(occ[i]>0){const v=spk[i]/occ[i]/(mx||1);if(v>0.02){x.globalAlpha=Math.min(1,v);x.fillRect((i%G)*cell,Math.floor(i/G)*cell,cell+.6,cell+.6)}}}
+    x.globalAlpha=1;
+    x.strokeStyle=tok('--muted');x.globalAlpha=.35;x.lineWidth=1;x.beginPath();trail.forEach((p,i)=>i?x.lineTo(p.x*w,p.y*h):x.moveTo(p.x*w,p.y*h));x.stroke();x.globalAlpha=1;
+    x.fillStyle=tok('--ink');x.strokeStyle=tok('--surface');x.lineWidth=2;
+    x.beginPath();x.arc(objs[0].x*w,objs[0].y*h,9,0,7);x.fill();x.stroke();
+    x.fillRect(objs[1].x*w-8,objs[1].y*h-8,16,16);x.strokeRect(objs[1].x*w-8,objs[1].y*h-8,16,16);
+    const r=rate(pos.x,pos.y);x.fillStyle=tok('--signal');x.beginPath();x.arc(pos.x*w,pos.y*h,6+r*6,0,7);x.fill();
+    x.strokeStyle=tok('--line');x.lineWidth=2;x.strokeRect(1,1,w-2,h-2);
+  }
+  let running=false;
+  function loop(){for(let i=0;i<3;i++)move();draw();if(wander||target){requestAnimationFrame(loop)}else running=false}
+  function kick(){if(!running){running=true;requestAnimationFrame(loop)}}
+  function pt(e){const r=C.getBoundingClientRect();return{x:Math.min(.98,Math.max(.02,(e.clientX-r.left)/r.width)),y:Math.min(.98,Math.max(.02,(e.clientY-r.top)/r.height))}}
+  C.addEventListener('pointermove',e=>{target=pt(e);kick()});C.addEventListener('pointerdown',e=>{target=pt(e);kick()});
+  C.addEventListener('pointerleave',()=>{target=null});
+  function setInfo(){const i=info[type];$('#gcT').textContent=i[0];$('#gcW').textContent=i[1];$('#gcD').textContent=i[2]}
+  $$('#gcSeg button').forEach(b=>b.onclick=()=>{type=b.dataset.c;$$('#gcSeg button').forEach(x=>x.setAttribute('aria-pressed',x===b));setInfo();seed();draw()});
+  $('#gcWander').onclick=e=>{wander=!wander;e.currentTarget.setAttribute('aria-pressed',wander);e.currentTarget.textContent=wander?'Stop wandering':'Wander';if(wander)kick()};
+  $('#gcMove').onclick=()=>{objs=objs.map(()=>({x:.25+Math.random()*.55,y:.2+Math.random()*.6}));seed();draw()};
+  setInfo();seed();draw();onTheme(draw);
+})();
+})();
+</script>
+
+</body></html>
